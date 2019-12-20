@@ -4,6 +4,7 @@ import { SideBar } from "../../../components";
 import Icon from "react-native-vector-icons/FontAwesome";
 import Constants from "expo-constants";
 import { FlatList } from "react-native-gesture-handler";
+
 import {
   URL_GET_TODO_LIST,
   URL_GET_PROJECT_LIST,
@@ -83,7 +84,7 @@ class TodoBox extends React.Component {
         headers: {}
       };
       const formData = new FormData();
-      formData.append("todo_text", todoValue);
+      formData.append("todo_text", todoValue.todo_text);
       formData.append("project_id", projectValue.slug);
       const res = await axios.post(URL_POST_TODO_LIST, formData, config);
 
