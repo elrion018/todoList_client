@@ -24,6 +24,7 @@ class NewWriteToDoModal extends React.Component {
         todo_text: "",
         goal_date: new Date()
       },
+      tempGoalDate: new Date(),
       projectValue: {},
       selectedDay: null,
       isCalendars: false
@@ -34,13 +35,56 @@ class NewWriteToDoModal extends React.Component {
 
   _menu = null;
 
-  onSelectDay = day => {
+  fixDate = () => {
+    let copiedArray = this.state.todoValue;
+
+    copiedArray = {
+      ...copiedArray,
+      goal_date: this.state.tempGoalDate
+    };
+
     this.setState({
-      selectedDay: day.dateString
+      todoValue: copiedArray
     });
   };
 
-  setDateByButton = index => {};
+  handleChangeByButton = value => {
+    let nowDate = new Date();
+    switch (value) {
+      case "오늘":
+        console.log("call");
+        this.setState({
+          tempGoalDate: new Date()
+        });
+        break;
+      case "내일":
+        nowDate.setDate(nowDate.getDate() + 1);
+        this.setState({
+          tempGoalDate: nowDate
+        });
+        break;
+
+      case "다음 주":
+        nowDate.setDate(nowDate.getDate() + 7);
+        this.setState({
+          tempGoalDate: nowDate
+        });
+        break;
+      default:
+    }
+  };
+
+  handleDateChange = value => {
+    const convertedDateString = value.dateString.split("-");
+
+    this.setState({
+      tempGoalDate: new Date(
+        convertedDateString[0],
+        convertedDateString[1],
+        convertedDateString[2]
+      )
+    });
+  };
 
   setMenuRef = ref => {
     this._menu = ref;
@@ -108,7 +152,7 @@ class NewWriteToDoModal extends React.Component {
     });
   };
 
-  handleChange = text => {
+  handleTextChange = text => {
     let copiedArray = this.state.todoValue;
     copiedArray = {
       ...copiedArray,
@@ -121,7 +165,7 @@ class NewWriteToDoModal extends React.Component {
   };
 
   render() {
-    const day = ["오늘", "내일", "다음 주", "권장"];
+    const day = ["오늘", "내일", "다음 주"];
     const {
       animationType,
       transparent,
@@ -181,11 +225,11 @@ class NewWriteToDoModal extends React.Component {
                   <Icon name="pen" size={20}></Icon>
                   <TouchableOpacity style={{ marginLeft: 10 }}>
                     <Text>
-                      {this.state.todoValue.goal_date.getFullYear() +
+                      {this.state.tempGoalDate.getFullYear() +
                         "년 " +
-                        (this.state.todoValue.goal_date.getMonth() + 1) +
+                        (this.state.tempGoalDate.getMonth() + 1) +
                         "월 " +
-                        this.state.todoValue.goal_date.getDate() +
+                        this.state.tempGoalDate.getDate() +
                         "일"}
                     </Text>
                   </TouchableOpacity>
@@ -197,6 +241,9 @@ class NewWriteToDoModal extends React.Component {
                         flexDirection: "row",
                         height: 30,
                         width: "100%"
+                      }}
+                      onPress={() => {
+                        this.handleChangeByButton(item);
                       }}
                     >
                       <View
@@ -211,12 +258,21 @@ class NewWriteToDoModal extends React.Component {
                     </TouchableOpacity>
                   );
                 })}
+                <TouchableOpacity
+                  style={{ position: "absolute", right: 20, bottom: 20 }}
+                  onPress={() => {
+                    this.fixDate();
+                    this._closeCalendarsAnimate();
+                  }}
+                >
+                  <Text>일정 변경</Text>
+                </TouchableOpacity>
               </View>
               <CalendarList
                 style={{
                   height: 350
                 }}
-                onDayPress={this.onSelectDay}
+                onDayPress={this.handleDateChange}
                 markedDates={{
                   [this.state.selectedDay]: {
                     selected: true,
@@ -246,13 +302,12 @@ class NewWriteToDoModal extends React.Component {
                 <TextInput
                   placeholder={"할 일을 입력하세요"}
                   value={this.state.todoValue.todo_text}
-                  onChangeText={text => this.handleChange(text)}
+                  onChangeText={text => this.handleTextChange(text)}
                 ></TextInput>
               </View>
               <Text>{this.state.todoValue.todo_text}</Text>
               <View style={{ flexDirection: "row" }}>
                 <TouchableOpacity
-                  style={{ width: 70 }}
                   onPress={() => {
                     if (this.state.isCalendars) {
                       this._closeCalendarsAnimate();
@@ -261,7 +316,14 @@ class NewWriteToDoModal extends React.Component {
                     }
                   }}
                 >
-                  <Text>일정</Text>
+                  <Text>
+                    {this.state.todoValue.goal_date.getFullYear() +
+                      "년 " +
+                      (this.state.todoValue.goal_date.getMonth() + 1) +
+                      "월 " +
+                      this.state.todoValue.goal_date.getDate() +
+                      "일 "}
+                  </Text>
                 </TouchableOpacity>
                 <View>
                   <Menu

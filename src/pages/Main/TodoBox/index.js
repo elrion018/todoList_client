@@ -85,6 +85,7 @@ class TodoBox extends React.Component {
       };
       const formData = new FormData();
       formData.append("todo_text", todoValue.todo_text);
+      formData.append("goal_date", todoValue.goal_date);
       formData.append("project_id", projectValue.slug);
       const res = await axios.post(URL_POST_TODO_LIST, formData, config);
 
