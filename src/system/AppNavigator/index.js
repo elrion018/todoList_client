@@ -29,7 +29,7 @@ const HomeNavigator = createStackNavigator(
     }
   },
   {
-    initialRouteName: "Home"
+    initialRouteName: "TodoBox"
   }
 );
 

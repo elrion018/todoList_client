@@ -10,11 +10,8 @@ import {
   URL_GET_PROJECT_LIST,
   URL_POST_TODO_LIST
 } from "../../../globals/api";
-import { NewWriteToDoModal } from "../../../modals";
+import { NewWriteToDoModal, ToDoEditModal } from "../../../modals";
 import axios from "axios";
-
-// axios.defaults.xsrfCookieName = "csrftoken";
-// axios.defaults.xsrfHeaderName = "X-CSRFToken";
 
 class TodoBox extends React.Component {
   constructor() {
@@ -27,14 +24,36 @@ class TodoBox extends React.Component {
           todo_text: ""
         }
       ],
+      todoDataForModal: {
+        todo_text: "",
+        project: {
+          project_text: ""
+        },
+        goal_date: null
+      },
       projectData: [
         {
           project_text: ""
         }
       ],
-      NewWriteToDoModal: false
+      NewWriteToDoModal: false,
+      ToDoEditModal: false
     };
   }
+
+  _setToDoEditModal = (visible, item) => {
+    this.setState(
+      {
+        todoDataForModal: item
+      },
+      () => {
+        console.log(this.state.todoDataForModal);
+        this.setState({
+          ToDoEditModal: visible
+        });
+      }
+    );
+  };
 
   _setNewWriteToDoModal = visible => {
     this.setState({
@@ -85,7 +104,15 @@ class TodoBox extends React.Component {
       };
       const formData = new FormData();
       formData.append("todo_text", todoValue.todo_text);
-      formData.append("goal_date", todoValue.goal_date);
+      formData.append(
+        "goal_date",
+        todoValue.goal_date.getFullYear() +
+          "-" +
+          (todoValue.goal_date.getMonth() + 1) +
+          "-" +
+          todoValue.goal_date.getDate() +
+          "T00:00:00Z"
+      );
       formData.append("project_id", projectValue.slug);
       const res = await axios.post(URL_POST_TODO_LIST, formData, config);
 
@@ -127,25 +154,53 @@ class TodoBox extends React.Component {
             <Text style={{ color: "white" }}>관리함</Text>
           </View>
         </View>
-        <View>
+        <View style={{ flex: 1 }}>
           <FlatList
             data={this.state.todoData}
             renderItem={({ item }) => {
-              return (
-                <View
-                  style={{
-                    borderBottomWidth: 1,
-                    // borderTopColor: "grey",
-                    borderBottomColor: "grey",
-                    height: 50,
-                    justifyContent: "center"
-                  }}
-                >
-                  <Text style={{ color: "black", marginLeft: 10 }}>
-                    {item.todo_text}
-                  </Text>
-                </View>
-              );
+              const goalDate = "" + item.goal_date;
+              if (item.goal_date === null) {
+                return (
+                  <TouchableOpacity
+                    style={{
+                      borderBottomWidth: 1,
+                      borderBottomColor: "grey",
+                      height: 50,
+                      justifyContent: "center"
+                    }}
+                    onPress={() => {
+                      this._setToDoEditModal(true, item);
+                    }}
+                  >
+                    <Text style={{ color: "black", marginLeft: 10 }}>
+                      {item.todo_text}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              } else {
+                return (
+                  <TouchableOpacity
+                    style={{
+                      borderBottomWidth: 1,
+                      borderBottomColor: "grey",
+                      height: 50,
+                      justifyContent: "center"
+                    }}
+                    onPress={() => {
+                      this._setToDoEditModal(true, item);
+                    }}
+                  >
+                    <Text style={{ color: "black", marginLeft: 10 }}>
+                      {item.todo_text}
+                    </Text>
+                    <Text style={{ color: "black", marginLeft: 10 }}>
+                      {goalDate.substring(0, 10) +
+                        " " +
+                        goalDate.substring(11, 16)}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              }
             }}
           />
         </View>
@@ -173,6 +228,14 @@ class TodoBox extends React.Component {
           transparent={true}
           data={this.state.projectData}
           visible={this.state.NewWriteToDoModal}
+          _makeNewTodo={this._makeNewTodo}
+        />
+        <ToDoEditModal
+          setModalProp={this._setToDoEditModal}
+          animationType={"none"}
+          transparent={true}
+          data={this.state.todoDataForModal}
+          visible={this.state.ToDoEditModal}
           _makeNewTodo={this._makeNewTodo}
         />
       </View>

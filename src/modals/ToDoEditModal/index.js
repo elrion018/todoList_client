@@ -13,7 +13,7 @@ import { Calendar, CalendarList, Agenda } from "react-native-calendars";
 import Menu, { MenuItem, MenuDivider } from "react-native-material-menu";
 import Icon from "react-native-vector-icons/FontAwesome";
 
-class NewWriteToDoModal extends React.Component {
+class ToDoEditModal extends React.Component {
   constructor() {
     super();
 
@@ -106,9 +106,6 @@ class NewWriteToDoModal extends React.Component {
   };
 
   _firstLoad = () => {
-    this.setState({
-      projectValue: this.props.data[0]
-    });
     Animated.timing(this.state.bgOpacity, {
       toValue: 1,
       duration: 500
@@ -152,7 +149,13 @@ class NewWriteToDoModal extends React.Component {
       toValue: 0,
       duration: 500
     }).start(() => {
-      this.props.setModalProp(false);
+      this.props.setModalProp(false, {
+        todo_text: "",
+        project: {
+          project_text: ""
+        },
+        goal_date: null
+      });
     });
   };
 
@@ -175,8 +178,8 @@ class NewWriteToDoModal extends React.Component {
       transparent,
       visible,
       setModalProp,
-      data,
-      _makeNewTodo
+      _makeNewTodo,
+      data
     } = this.props;
     return (
       <Modal
@@ -211,7 +214,49 @@ class NewWriteToDoModal extends React.Component {
             height: this.state.pageHeight
           }}
         >
-          {this.state.isCalendars ? (
+          <View
+            style={{
+              paddingTop: 20,
+              borderTopLeftRadius: 12,
+              borderTopRightRadius: 12,
+              width: "100%",
+              height: 300,
+              paddingRight: 32,
+              paddingLeft: 32,
+              backgroundColor: "white"
+            }}
+          >
+            <View style={{ flexDirection: "row", alignItems: "center" }}>
+              <View
+                style={{
+                  width: 10,
+                  height: 10,
+                  borderRadius: 30,
+                  backgroundColor: "black"
+                }}
+              ></View>
+              <Text style={{ marginLeft: 10 }}>
+                {data.project.project_text}
+              </Text>
+            </View>
+            <View>
+              <Text>{data.todo_text}</Text>
+              {data.goal_date === null ? (
+                <TouchableOpacity>
+                  <Text>날짜 없음</Text>
+                </TouchableOpacity>
+              ) : (
+                <TouchableOpacity>
+                  <Text>
+                    {data.goal_date.substring(0, 10) +
+                      " " +
+                      data.goal_date.substring(11, 16)}
+                  </Text>
+                </TouchableOpacity>
+              )}
+            </View>
+          </View>
+          {/* {this.state.isCalendars ? (
             <>
               <View
                 style={{
@@ -404,11 +449,11 @@ class NewWriteToDoModal extends React.Component {
                 <Icon name={"send"} size={30}></Icon>
               </TouchableOpacity>
             </View>
-          )}
+          )} */}
         </Animated.View>
       </Modal>
     );
   }
 }
 
-export default NewWriteToDoModal;
+export default ToDoEditModal;
