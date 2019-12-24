@@ -22,9 +22,13 @@ class ToDoEditModal extends React.Component {
       pageHeight: new Animated.Value(0),
       todoValue: {
         todo_text: "",
-        goal_date: new Date()
+        goal_date: new Date(),
+        slug: 0
       },
       tempGoalDate: new Date(),
+      tempTodoText: "",
+      tempSlug: 0,
+
       projectValue: {},
       selectedDay: null,
       isCalendars: false
@@ -38,21 +42,46 @@ class ToDoEditModal extends React.Component {
   fixDate = () => {
     let copiedArray = this.state.todoValue;
 
-    copiedArray = {
-      ...copiedArray,
-      goal_date: this.state.tempGoalDate
-    };
+    if (this.state.tempGoalDate === null) {
+      copiedArray = {
+        ...copiedArray,
+        todo_text: this.state.tempTodoText,
+        goal_date: this.state.tempGoalDate,
+        slug: this.state.tempSlug
+      };
+    } else {
+      copiedArray = {
+        ...copiedArray,
+        todo_text: this.state.tempTodoText,
+        slug: this.state.tempSlug,
+        goal_date:
+          this.state.tempGoalDate.getFullYear() +
+          "-" +
+          (this.state.tempGoalDate.getMonth() + 1) +
+          "-" +
+          this.state.tempGoalDate.getDate() +
+          "T00:00:00Z"
+      };
+    }
 
-    this.setState({
-      todoValue: copiedArray
-    });
+    this.setState(
+      {
+        todoValue: copiedArray
+      },
+      () => {
+        console.log(this.state.todoValue);
+        this.props._editTodoDetail(
+          this.state.todoValue,
+          this.state.todoValue.slug
+        );
+      }
+    );
   };
 
   handleChangeByButton = value => {
     let nowDate = new Date();
     switch (value) {
       case "오늘":
-        console.log("call");
         this.setState({
           tempGoalDate: new Date()
         });
@@ -106,6 +135,20 @@ class ToDoEditModal extends React.Component {
   };
 
   _firstLoad = () => {
+    if (this.props.data.goal_date === null) {
+      this.setState({
+        tempTodoText: this.props.data.todo_text,
+        tempGoalDate: null,
+        tempSlug: this.props.data.slug
+      });
+    } else {
+      this.setState({
+        tempTodoText: this.props.data.todo_text,
+        tempGoalDate: new Date(this.props.data.goal_date),
+        tempSlug: this.props.data.slug
+      });
+    }
+
     Animated.timing(this.state.bgOpacity, {
       toValue: 1,
       duration: 500
@@ -214,49 +257,7 @@ class ToDoEditModal extends React.Component {
             height: this.state.pageHeight
           }}
         >
-          <View
-            style={{
-              paddingTop: 20,
-              borderTopLeftRadius: 12,
-              borderTopRightRadius: 12,
-              width: "100%",
-              height: 300,
-              paddingRight: 32,
-              paddingLeft: 32,
-              backgroundColor: "white"
-            }}
-          >
-            <View style={{ flexDirection: "row", alignItems: "center" }}>
-              <View
-                style={{
-                  width: 10,
-                  height: 10,
-                  borderRadius: 30,
-                  backgroundColor: "black"
-                }}
-              ></View>
-              <Text style={{ marginLeft: 10 }}>
-                {data.project.project_text}
-              </Text>
-            </View>
-            <View>
-              <Text>{data.todo_text}</Text>
-              {data.goal_date === null ? (
-                <TouchableOpacity>
-                  <Text>날짜 없음</Text>
-                </TouchableOpacity>
-              ) : (
-                <TouchableOpacity>
-                  <Text>
-                    {data.goal_date.substring(0, 10) +
-                      " " +
-                      data.goal_date.substring(11, 16)}
-                  </Text>
-                </TouchableOpacity>
-              )}
-            </View>
-          </View>
-          {/* {this.state.isCalendars ? (
+          {this.state.isCalendars ? (
             <>
               <View
                 style={{
@@ -348,108 +349,59 @@ class ToDoEditModal extends React.Component {
                 borderTopLeftRadius: 12,
                 borderTopRightRadius: 12,
                 width: "100%",
-                height: 150,
+                height: 300,
                 paddingRight: 32,
                 paddingLeft: 32,
                 backgroundColor: "white"
               }}
             >
-              <View>
-                <TextInput
-                  placeholder={"할 일을 입력하세요"}
-                  value={this.state.todoValue.todo_text}
-                  onChangeText={text => this.handleTextChange(text)}
-                ></TextInput>
+              <View style={{ flexDirection: "row", alignItems: "center" }}>
+                <View
+                  style={{
+                    width: 10,
+                    height: 10,
+                    borderRadius: 30,
+                    backgroundColor: "black"
+                  }}
+                ></View>
+                <Text style={{ marginLeft: 10 }}>
+                  {data.project.project_text}
+                </Text>
               </View>
-              <Text>{this.state.todoValue.todo_text}</Text>
-              <View style={{ flexDirection: "row" }}>
-                {this.state.todoValue.goal_date === null && (
+              <View>
+                <Text>{data.todo_text}</Text>
+                {this.state.tempGoalDate === null ? (
                   <TouchableOpacity
                     onPress={() => {
-                      if (this.state.isCalendars) {
-                        this._closeCalendarsAnimate();
-                      } else {
-                        this._openCalendarsAnimate();
-                      }
+                      this._openCalendarsAnimate();
                     }}
                   >
                     <Text>날짜 없음</Text>
                   </TouchableOpacity>
-                )}
-                {this.state.todoValue.goal_date !== null && (
+                ) : (
                   <TouchableOpacity
                     onPress={() => {
-                      if (this.state.isCalendars) {
-                        this._closeCalendarsAnimate();
-                      } else {
-                        this._openCalendarsAnimate();
-                      }
+                      this._openCalendarsAnimate();
                     }}
                   >
                     <Text>
-                      {this.state.todoValue.goal_date.getFullYear() +
+                      {this.state.tempGoalDate.getFullYear() +
                         "년 " +
-                        (this.state.todoValue.goal_date.getMonth() + 1) +
+                        (this.state.tempGoalDate.getMonth() + 1) +
                         "월 " +
-                        this.state.todoValue.goal_date.getDate() +
-                        "일 "}
+                        this.state.tempGoalDate.getDate() +
+                        "일 " +
+                        this.state.tempGoalDate.getHours() +
+                        ":"}
+                      {this.state.tempGoalDate.getMinutes() < 9
+                        ? "0" + this.state.tempGoalDate.getMinutes()
+                        : this.state.tempGoalDate.getMinutes()}
                     </Text>
                   </TouchableOpacity>
                 )}
-                <View>
-                  <Menu
-                    style={{ width: 70 }}
-                    ref={this.setMenuRef}
-                    button={
-                      <TouchableOpacity onPress={this.showMenu}>
-                        <Text>{this.state.projectValue.project_text}</Text>
-                      </TouchableOpacity>
-                    }
-                  >
-                    {data.map((item, index) => {
-                      return (
-                        <>
-                          <MenuItem
-                            onPress={() => {
-                              this.hideMenu(item);
-                            }}
-                          >
-                            {item.project_text}
-                          </MenuItem>
-                          <MenuDivider />
-                        </>
-                      );
-                    })}
-                  </Menu>
-                </View>
               </View>
-              <TouchableOpacity
-                style={{
-                  position: "absolute",
-                  right: 10,
-                  bottom: 10,
-                  width: 50,
-                  height: 50,
-                  borderRadius: 30,
-                  backgroundColor: "blue",
-                  alignItems: "center",
-                  justifyContent: "center"
-                }}
-                onPress={() => {
-                  _makeNewTodo(this.state.todoValue, this.state.projectValue);
-                  setModalProp(false);
-                  this.setState({
-                    todoValue: {
-                      todo_text: "",
-                      goal_date: new Date()
-                    }
-                  });
-                }}
-              >
-                <Icon name={"send"} size={30}></Icon>
-              </TouchableOpacity>
             </View>
-          )} */}
+          )}
         </Animated.View>
       </Modal>
     );

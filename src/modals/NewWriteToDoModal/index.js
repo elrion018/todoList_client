@@ -52,7 +52,6 @@ class NewWriteToDoModal extends React.Component {
     let nowDate = new Date();
     switch (value) {
       case "오늘":
-        console.log("call");
         this.setState({
           tempGoalDate: new Date()
         });

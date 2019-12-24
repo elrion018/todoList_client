@@ -8,7 +8,8 @@ import { FlatList } from "react-native-gesture-handler";
 import {
   URL_GET_TODO_LIST,
   URL_GET_PROJECT_LIST,
-  URL_POST_TODO_LIST
+  URL_POST_TODO_LIST,
+  URL_PUT_TODO_DETAIL
 } from "../../../globals/api";
 import { NewWriteToDoModal, ToDoEditModal } from "../../../modals";
 import axios from "axios";
@@ -47,7 +48,6 @@ class TodoBox extends React.Component {
         todoDataForModal: item
       },
       () => {
-        console.log(this.state.todoDataForModal);
         this.setState({
           ToDoEditModal: visible
         });
@@ -117,6 +117,27 @@ class TodoBox extends React.Component {
       const res = await axios.post(URL_POST_TODO_LIST, formData, config);
 
       if (res.status === 201) {
+        this._getTodoList();
+      }
+    } catch (error) {
+      console.log(error);
+      console.error(error);
+    }
+  };
+
+  _editTodoDetail = async (todoValue, slug) => {
+    try {
+      const config = {
+        headers: {}
+      };
+
+      const formData = new FormData();
+      formData.append("todo_text", todoValue.todo_text);
+      formData.append("goal_date", todoValue.goal_date);
+
+      const res = await axios.put(URL_PUT_TODO_DETAIL(slug), formData, config);
+
+      if (res.status === 200) {
         this._getTodoList();
       }
     } catch (error) {
@@ -236,7 +257,7 @@ class TodoBox extends React.Component {
           transparent={true}
           data={this.state.todoDataForModal}
           visible={this.state.ToDoEditModal}
-          _makeNewTodo={this._makeNewTodo}
+          _editTodoDetail={this._editTodoDetail}
         />
       </View>
     );
