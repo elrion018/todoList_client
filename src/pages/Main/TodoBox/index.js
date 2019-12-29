@@ -9,9 +9,17 @@ import {
   URL_GET_TODO_LIST,
   URL_GET_PROJECT_LIST,
   URL_POST_TODO_LIST,
-  URL_PUT_TODO_DETAIL
+  URL_PUT_TODO_DETAIL,
+  URL_GET_SUBTODO_LIST,
+  URL_POST_SUBTODO_LIST,
+  URL_PUT_SUBTODO_DETAIL
 } from "../../../globals/api";
-import { NewWriteToDoModal, ToDoEditModal } from "../../../modals";
+import {
+  NewWriteToDoModal,
+  ToDoEditModal,
+  SubToDoEditModal,
+  NewWriteSubToDoModal
+} from "../../../modals";
 import axios from "axios";
 
 class TodoBox extends React.Component {
@@ -32,15 +40,39 @@ class TodoBox extends React.Component {
         },
         goal_date: null
       },
+      subtodoDataForModal: {},
       projectData: [
         {
           project_text: ""
         }
       ],
+      subtodoData: [],
+
       NewWriteToDoModal: false,
-      ToDoEditModal: false
+      NewWriteSubToDoModal: false,
+      ToDoEditModal: false,
+      SubToDoEditModal: false
     };
   }
+
+  _setNewWriteSubToDoModal = visible => {
+    this.setState({
+      NewWriteSubToDoModal: visible
+    });
+  };
+
+  _setSubToDoEditModal = (visible, item) => {
+    this.setState(
+      {
+        subtodoDataForModal: item
+      },
+      () => {
+        this.setState({
+          SubToDoEditModal: visible
+        });
+      }
+    );
+  };
 
   _setToDoEditModal = (visible, item) => {
     this.setState(
@@ -97,6 +129,24 @@ class TodoBox extends React.Component {
     }
   };
 
+  _getSubTodoList = async () => {
+    try {
+      const config = {
+        headers: {}
+      };
+      const res = await axios.get(URL_GET_SUBTODO_LIST, config);
+
+      if (res.status === 200) {
+        this.setState({
+          subtodoData: res.data
+        });
+      }
+    } catch (error) {
+      console.log(error);
+      console.error(error);
+    }
+  };
+
   _makeNewTodo = async (todoValue, projectValue) => {
     try {
       const config = {
@@ -118,6 +168,35 @@ class TodoBox extends React.Component {
 
       if (res.status === 201) {
         this._getTodoList();
+      }
+    } catch (error) {
+      console.log(error);
+      console.error(error);
+    }
+  };
+
+  _makeNewSubTodo = async (subtodoValue, todoValue) => {
+    try {
+      const config = {
+        headers: {}
+      };
+
+      const formData = new FormData();
+      formData.append("subtodo_text", subtodoValue.subtodo_text);
+      formData.append(
+        "goal_date",
+        subtodoValue.goal_date.getFullYear() +
+          "-" +
+          (subtodoValue.goal_date.getMonth() + 1) +
+          "-" +
+          subtodoValue.goal_date.getDate() +
+          "T00:00:00Z"
+      );
+      formData.append("todo_id", todoValue.slug);
+      const res = await axios.post(URL_POST_SUBTODO_LIST, formData, config);
+
+      if (res.status == 201) {
+        this._getSubTodoList();
       }
     } catch (error) {
       console.log(error);
@@ -258,6 +337,24 @@ class TodoBox extends React.Component {
           data={this.state.todoDataForModal}
           visible={this.state.ToDoEditModal}
           _editTodoDetail={this._editTodoDetail}
+          _setNewWriteSubToDoModal={this._setNewWriteSubToDoModal}
+        />
+        <SubToDoEditModal
+          setModalProp={this._setSubToDoEditModal}
+          animationType={"none"}
+          transparent={true}
+          data={this.state.subtodoDataForModal}
+          visible={this.state.SubToDoEditModal}
+          // _editTodoDetail={this._editTodoDetail}
+        />
+        <NewWriteSubToDoModal
+          setModalProp={this._setNewWriteSubToDoModal}
+          animationType={"none"}
+          transparent={true}
+          data={this.state.todoData}
+          visible={this.state.NewWriteSubToDoModal}
+          // _makeNewTodo={this._makeNewTodo}
+          _makeNewSubTodo={this._makeNewSubTodo}
         />
       </View>
     );

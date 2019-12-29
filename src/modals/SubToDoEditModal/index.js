@@ -13,7 +13,7 @@ import { Calendar, CalendarList, Agenda } from "react-native-calendars";
 import Menu, { MenuItem, MenuDivider } from "react-native-material-menu";
 import Icon from "react-native-vector-icons/FontAwesome";
 
-class ToDoEditModal extends React.Component {
+class SubToDoEditModal extends React.Component {
   constructor() {
     super();
 
@@ -191,13 +191,13 @@ class ToDoEditModal extends React.Component {
       toValue: 0,
       duration: 500
     }).start(() => {
-      this.props.setModalProp(false, {
-        todo_text: "",
-        project: {
-          project_text: ""
-        },
-        goal_date: null
-      });
+      // this.props.setModalProp(false, {
+      //   todo_text: "",
+      //   project: {
+      //     project_text: ""
+      //   },
+      //   goal_date: null
+      // });
     });
   };
 
@@ -364,7 +364,7 @@ class ToDoEditModal extends React.Component {
                   }}
                 ></View>
                 <Text style={{ marginLeft: 10 }}>
-                  {data.project.project_text}
+                  {/* {data.project.project_text} */}
                 </Text>
               </View>
               <View>
@@ -400,9 +400,6 @@ class ToDoEditModal extends React.Component {
                 )}
                 <TouchableOpacity
                   style={{ flexDirection: "row", alignItems: "center" }}
-                  onPress={() => {
-                    this.props._setNewWriteSubToDoModal(true);
-                  }}
                 >
                   <View
                     style={{ height: 10, width: 10, backgroundColor: "black" }}
@@ -418,4 +415,4 @@ class ToDoEditModal extends React.Component {
   }
 }
 
-export default ToDoEditModal;
+export default SubToDoEditModal;

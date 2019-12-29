@@ -13,23 +13,19 @@ import { Calendar, CalendarList, Agenda } from "react-native-calendars";
 import Menu, { MenuItem, MenuDivider } from "react-native-material-menu";
 import Icon from "react-native-vector-icons/FontAwesome";
 
-class ToDoEditModal extends React.Component {
+class NewWriteSubToDoModal extends React.Component {
   constructor() {
     super();
 
     this.state = {
       bgOpacity: new Animated.Value(0),
       pageHeight: new Animated.Value(0),
-      todoValue: {
-        todo_text: "",
-        goal_date: new Date(),
-        slug: 0
+      subTodoValue: {
+        subtodo_text: "",
+        goal_date: new Date()
       },
       tempGoalDate: new Date(),
-      tempTodoText: "",
-      tempSlug: 0,
-
-      projectValue: {},
+      todoValue: { slug: 1 },
       selectedDay: null,
       isCalendars: false
     };
@@ -40,41 +36,16 @@ class ToDoEditModal extends React.Component {
   _menu = null;
 
   fixDate = () => {
-    let copiedArray = this.state.todoValue;
+    let copiedArray = this.state.subTodoValue;
 
-    if (this.state.tempGoalDate === null) {
-      copiedArray = {
-        ...copiedArray,
-        todo_text: this.state.tempTodoText,
-        goal_date: this.state.tempGoalDate,
-        slug: this.state.tempSlug
-      };
-    } else {
-      copiedArray = {
-        ...copiedArray,
-        todo_text: this.state.tempTodoText,
-        slug: this.state.tempSlug,
-        goal_date:
-          this.state.tempGoalDate.getFullYear() +
-          "-" +
-          (this.state.tempGoalDate.getMonth() + 1) +
-          "-" +
-          this.state.tempGoalDate.getDate() +
-          "T00:00:00Z"
-      };
-    }
+    copiedArray = {
+      ...copiedArray,
+      goal_date: this.state.tempGoalDate
+    };
 
-    this.setState(
-      {
-        todoValue: copiedArray
-      },
-      () => {
-        this.props._editTodoDetail(
-          this.state.todoValue,
-          this.state.todoValue.slug
-        );
-      }
-    );
+    this.setState({
+      subTodoValue: copiedArray
+    });
   };
 
   handleChangeByButton = value => {
@@ -124,7 +95,7 @@ class ToDoEditModal extends React.Component {
 
   hideMenu = item => {
     this.setState({
-      projectValue: item
+      todoValue: item
     });
     this._menu.hide();
   };
@@ -134,20 +105,9 @@ class ToDoEditModal extends React.Component {
   };
 
   _firstLoad = () => {
-    if (this.props.data.goal_date === null) {
-      this.setState({
-        tempTodoText: this.props.data.todo_text,
-        tempGoalDate: null,
-        tempSlug: this.props.data.slug
-      });
-    } else {
-      this.setState({
-        tempTodoText: this.props.data.todo_text,
-        tempGoalDate: new Date(this.props.data.goal_date),
-        tempSlug: this.props.data.slug
-      });
-    }
-
+    // this.setState({
+    //   todoValue: this.props.data[0]
+    // });
     Animated.timing(this.state.bgOpacity, {
       toValue: 1,
       duration: 500
@@ -191,25 +151,19 @@ class ToDoEditModal extends React.Component {
       toValue: 0,
       duration: 500
     }).start(() => {
-      this.props.setModalProp(false, {
-        todo_text: "",
-        project: {
-          project_text: ""
-        },
-        goal_date: null
-      });
+      this.props.setModalProp(false);
     });
   };
 
   handleTextChange = text => {
-    let copiedArray = this.state.todoValue;
+    let copiedArray = this.state.subTodoValue;
     copiedArray = {
       ...copiedArray,
-      todo_text: text
+      subtodo_text: text
     };
     console.log(copiedArray);
     this.setState({
-      todoValue: copiedArray
+      subTodoValue: copiedArray
     });
   };
 
@@ -220,8 +174,8 @@ class ToDoEditModal extends React.Component {
       transparent,
       visible,
       setModalProp,
-      _makeNewTodo,
-      data
+      data,
+      _makeNewSubTodo
     } = this.props;
     return (
       <Modal
@@ -348,68 +302,109 @@ class ToDoEditModal extends React.Component {
                 borderTopLeftRadius: 12,
                 borderTopRightRadius: 12,
                 width: "100%",
-                height: 300,
+                height: 150,
                 paddingRight: 32,
                 paddingLeft: 32,
                 backgroundColor: "white"
               }}
             >
-              <View style={{ flexDirection: "row", alignItems: "center" }}>
-                <View
-                  style={{
-                    width: 10,
-                    height: 10,
-                    borderRadius: 30,
-                    backgroundColor: "black"
-                  }}
-                ></View>
-                <Text style={{ marginLeft: 10 }}>
-                  {data.project.project_text}
-                </Text>
-              </View>
               <View>
-                <Text>{data.todo_text}</Text>
-                {this.state.tempGoalDate === null ? (
+                <TextInput
+                  placeholder={"할 일을 입력하세요"}
+                  value={this.state.subTodoValue.subtodo_text}
+                  onChangeText={text => this.handleTextChange(text)}
+                ></TextInput>
+              </View>
+              <Text>{this.state.subTodoValue.subtodo_text}</Text>
+              <View style={{ flexDirection: "row" }}>
+                {this.state.subTodoValue.goal_date === null && (
                   <TouchableOpacity
                     onPress={() => {
-                      this._openCalendarsAnimate();
+                      if (this.state.isCalendars) {
+                        this._closeCalendarsAnimate();
+                      } else {
+                        this._openCalendarsAnimate();
+                      }
                     }}
                   >
                     <Text>날짜 없음</Text>
                   </TouchableOpacity>
-                ) : (
+                )}
+                {this.state.subTodoValue.goal_date !== null && (
                   <TouchableOpacity
                     onPress={() => {
-                      this._openCalendarsAnimate();
+                      if (this.state.isCalendars) {
+                        this._closeCalendarsAnimate();
+                      } else {
+                        this._openCalendarsAnimate();
+                      }
                     }}
                   >
                     <Text>
-                      {this.state.tempGoalDate.getFullYear() +
+                      {this.state.subTodoValue.goal_date.getFullYear() +
                         "년 " +
-                        (this.state.tempGoalDate.getMonth() + 1) +
+                        (this.state.subTodoValue.goal_date.getMonth() + 1) +
                         "월 " +
-                        this.state.tempGoalDate.getDate() +
-                        "일 " +
-                        this.state.tempGoalDate.getHours() +
-                        ":"}
-                      {this.state.tempGoalDate.getMinutes() < 9
-                        ? "0" + this.state.tempGoalDate.getMinutes()
-                        : this.state.tempGoalDate.getMinutes()}
+                        this.state.subTodoValue.goal_date.getDate() +
+                        "일 "}
                     </Text>
                   </TouchableOpacity>
                 )}
-                <TouchableOpacity
-                  style={{ flexDirection: "row", alignItems: "center" }}
-                  onPress={() => {
-                    this.props._setNewWriteSubToDoModal(true);
-                  }}
-                >
-                  <View
-                    style={{ height: 10, width: 10, backgroundColor: "black" }}
-                  ></View>
-                  <Text style={{ marginLeft: 10 }}>하위 작업 추가</Text>
-                </TouchableOpacity>
+                <View>
+                  <Menu
+                    style={{ width: 70 }}
+                    ref={this.setMenuRef}
+                    button={
+                      <TouchableOpacity onPress={this.showMenu}>
+                        <Text>{this.state.todoValue.project_text}</Text>
+                      </TouchableOpacity>
+                    }
+                  >
+                    {/* {data.map((item, index) => {
+                      return (
+                        <>
+                          <MenuItem
+                            onPress={() => {
+                              this.hideMenu(item);
+                            }}
+                          >
+                            {item.project_text}
+                          </MenuItem>
+                          <MenuDivider />
+                        </>
+                      );
+                    })} */}
+                  </Menu>
+                </View>
               </View>
+              <TouchableOpacity
+                style={{
+                  position: "absolute",
+                  right: 10,
+                  bottom: 10,
+                  width: 50,
+                  height: 50,
+                  borderRadius: 30,
+                  backgroundColor: "blue",
+                  alignItems: "center",
+                  justifyContent: "center"
+                }}
+                onPress={() => {
+                  _makeNewSubTodo(
+                    this.state.subTodoValue,
+                    this.state.todoValue
+                  );
+                  setModalProp(false);
+                  this.setState({
+                    subTodoValue: {
+                      subtodo_text: "",
+                      goal_date: new Date()
+                    }
+                  });
+                }}
+              >
+                <Icon name={"send"} size={30}></Icon>
+              </TouchableOpacity>
             </View>
           )}
         </Animated.View>
@@ -418,4 +413,4 @@ class ToDoEditModal extends React.Component {
   }
 }
 
-export default ToDoEditModal;
+export default NewWriteSubToDoModal;
