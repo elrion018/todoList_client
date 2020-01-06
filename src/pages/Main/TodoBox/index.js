@@ -4,6 +4,8 @@ import { SideBar } from "../../../components";
 import Icon from "react-native-vector-icons/FontAwesome";
 import Constants from "expo-constants";
 import { FlatList } from "react-native-gesture-handler";
+import { connect } from "react-redux";
+import * as actions from "../../../actions/appStatus";
 
 import {
   URL_GET_TODO_LIST,
@@ -104,6 +106,7 @@ class TodoBox extends React.Component {
         this.setState({
           todoData: res.data
         });
+        this.props.todoUpdate(res.data);
       }
     } catch (error) {
       console.log(error);
@@ -361,4 +364,18 @@ class TodoBox extends React.Component {
   }
 }
 
-export default TodoBox;
+const mapStateToProps = state => {
+  return {
+    appStatus: state.appStatus
+  };
+};
+
+const mapDispatchToProps = dispatch => {
+  return {
+    todoUpdate: todo => {
+      dispatch(actions.TodoUpdate(todo));
+    }
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(TodoBox);
