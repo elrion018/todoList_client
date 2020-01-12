@@ -30,11 +30,7 @@ class TodoBox extends React.Component {
 
     this.state = {
       isOpened: false,
-      todoData: [
-        {
-          todo_text: ""
-        }
-      ],
+
       todoDataForModal: {
         todo_text: "",
         project: {
@@ -48,7 +44,6 @@ class TodoBox extends React.Component {
           project_text: ""
         }
       ],
-      subtodoData: [],
 
       NewWriteToDoModal: false,
       NewWriteSubToDoModal: false,
@@ -103,9 +98,6 @@ class TodoBox extends React.Component {
       const res = await axios.get(URL_GET_TODO_LIST, config);
 
       if (res.status === 200) {
-        this.setState({
-          todoData: res.data
-        });
         this.props.todoUpdate(res.data);
       }
     } catch (error) {
@@ -140,9 +132,7 @@ class TodoBox extends React.Component {
       const res = await axios.get(URL_GET_SUBTODO_LIST, config);
 
       if (res.status === 200) {
-        this.setState({
-          subtodoData: res.data
-        });
+        this.props.subtodoUpdate(res.data);
       }
     } catch (error) {
       console.log(error);
@@ -231,9 +221,11 @@ class TodoBox extends React.Component {
   componentDidMount() {
     this._getTodoList();
     this._getProjectList();
+    this._getSubTodoList();
     this.focusListener1 = this.props.navigation.addListener("didFocus", () => {
       this._getTodoList();
       this._getProjectList();
+      this._getSubTodoList();
     });
   }
 
@@ -259,7 +251,7 @@ class TodoBox extends React.Component {
         </View>
         <View style={{ flex: 1 }}>
           <FlatList
-            data={this.state.todoData}
+            data={this.props.appStatus.todo}
             renderItem={({ item }) => {
               const goalDate = "" + item.goal_date;
               if (item.goal_date === null) {
@@ -337,10 +329,12 @@ class TodoBox extends React.Component {
           setModalProp={this._setToDoEditModal}
           animationType={"none"}
           transparent={true}
+          subtodo={this.props.appStatus.subtodo}
           data={this.state.todoDataForModal}
           visible={this.state.ToDoEditModal}
           _editTodoDetail={this._editTodoDetail}
           _setNewWriteSubToDoModal={this._setNewWriteSubToDoModal}
+          _getSubTodoList={this._getSubTodoList}
         />
         <SubToDoEditModal
           setModalProp={this._setSubToDoEditModal}
@@ -354,7 +348,7 @@ class TodoBox extends React.Component {
           setModalProp={this._setNewWriteSubToDoModal}
           animationType={"none"}
           transparent={true}
-          data={this.state.todoData}
+          data={this.props.appStatus.todo}
           visible={this.state.NewWriteSubToDoModal}
           // _makeNewTodo={this._makeNewTodo}
           _makeNewSubTodo={this._makeNewSubTodo}
@@ -374,6 +368,9 @@ const mapDispatchToProps = dispatch => {
   return {
     todoUpdate: todo => {
       dispatch(actions.TodoUpdate(todo));
+    },
+    subtodoUpdate: subtodo => {
+      dispatch(actions.SubTodoUpdate(subtodo));
     }
   };
 };

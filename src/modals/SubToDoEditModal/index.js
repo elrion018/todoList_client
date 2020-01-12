@@ -153,7 +153,7 @@ class SubToDoEditModal extends React.Component {
       duration: 500
     }).start();
     Animated.timing(this.state.pageHeight, {
-      toValue: 150,
+      toValue: 300,
       duration: 500
     }).start();
   };

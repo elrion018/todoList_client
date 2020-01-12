@@ -23,7 +23,7 @@ const appStatus = (state = initialState, action) => {
     case types.SUBTODO_UPDATE:
       return {
         ...state,
-        subtodo: [...action.subtodo]
+        subtodo: action.subtodo
       };
 
     default:

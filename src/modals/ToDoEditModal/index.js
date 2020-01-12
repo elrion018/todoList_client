@@ -12,6 +12,7 @@ import {
 import { Calendar, CalendarList, Agenda } from "react-native-calendars";
 import Menu, { MenuItem, MenuDivider } from "react-native-material-menu";
 import Icon from "react-native-vector-icons/FontAwesome";
+import { FlatList } from "react-native-gesture-handler";
 
 class ToDoEditModal extends React.Component {
   constructor() {
@@ -31,7 +32,8 @@ class ToDoEditModal extends React.Component {
 
       projectValue: {},
       selectedDay: null,
-      isCalendars: false
+      isCalendars: false,
+      subtodoValue: []
     };
   }
 
@@ -147,13 +149,18 @@ class ToDoEditModal extends React.Component {
         tempSlug: this.props.data.slug
       });
     }
+    this.setState({
+      subtodoValue: this.props.subtodo.filter(
+        item => item.todo.slug === this.props.data.slug
+      )
+    });
 
     Animated.timing(this.state.bgOpacity, {
       toValue: 1,
       duration: 500
     }).start();
     Animated.timing(this.state.pageHeight, {
-      toValue: 150,
+      toValue: 300,
       duration: 500
     }).start();
   };
@@ -349,6 +356,7 @@ class ToDoEditModal extends React.Component {
                 borderTopRightRadius: 12,
                 width: "100%",
                 height: 300,
+
                 paddingRight: 32,
                 paddingLeft: 32,
                 backgroundColor: "white"
@@ -398,6 +406,8 @@ class ToDoEditModal extends React.Component {
                     </Text>
                   </TouchableOpacity>
                 )}
+              </View>
+              {this.state.subtodoValue.length === 0 ? (
                 <TouchableOpacity
                   style={{ flexDirection: "row", alignItems: "center" }}
                   onPress={() => {
@@ -405,11 +415,58 @@ class ToDoEditModal extends React.Component {
                   }}
                 >
                   <View
-                    style={{ height: 10, width: 10, backgroundColor: "black" }}
+                    style={{
+                      height: 10,
+                      width: 10,
+                      backgroundColor: "black"
+                    }}
                   ></View>
                   <Text style={{ marginLeft: 10 }}>하위 작업 추가</Text>
                 </TouchableOpacity>
-              </View>
+              ) : (
+                <View>
+                  <FlatList
+                    data={this.state.subtodoValue}
+                    renderItem={({ item, index }) => {
+                      if (index === this.state.subtodoValue.length - 1) {
+                        return (
+                          <>
+                            <TouchableOpacity>
+                              <Text>{item.subtodo_text}</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                              style={{
+                                flexDirection: "row",
+                                alignItems: "center"
+                              }}
+                              onPress={() => {
+                                this.props._setNewWriteSubToDoModal(true);
+                              }}
+                            >
+                              <View
+                                style={{
+                                  height: 10,
+                                  width: 10,
+                                  backgroundColor: "black"
+                                }}
+                              ></View>
+                              <Text style={{ marginLeft: 10 }}>
+                                하위 작업 추가
+                              </Text>
+                            </TouchableOpacity>
+                          </>
+                        );
+                      } else {
+                      }
+                      return (
+                        <TouchableOpacity>
+                          <Text>{item.subtodo_text}</Text>
+                        </TouchableOpacity>
+                      );
+                    }}
+                  ></FlatList>
+                </View>
+              )}
             </View>
           )}
         </Animated.View>
