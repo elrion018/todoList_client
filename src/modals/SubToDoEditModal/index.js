@@ -231,6 +231,9 @@ class SubToDoEditModal extends React.Component {
         onShow={() => {
           this._firstLoad();
         }}
+        onRequestClose={() => {
+          this._dismissAnimate();
+        }}
       >
         <TouchableWithoutFeedback
           onPress={() => {

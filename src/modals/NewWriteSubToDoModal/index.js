@@ -24,8 +24,9 @@ class NewWriteSubToDoModal extends React.Component {
         subtodo_text: "",
         goal_date: new Date()
       },
+      todoValue: {},
+
       tempGoalDate: new Date(),
-      todoValue: { slug: 1 },
       selectedDay: null,
       isCalendars: false
     };
@@ -118,9 +119,9 @@ class NewWriteSubToDoModal extends React.Component {
     }).start();
   };
 
-  _setIsCalendars = () => {
+  _setIsCalendars = visible => {
     this.setState({
-      isCalendars: !this.state.isCalendars
+      isCalendars: visible
     });
   };
 
@@ -129,7 +130,7 @@ class NewWriteSubToDoModal extends React.Component {
       toValue: 650,
       duration: 500
     }).start(() => {
-      this._setIsCalendars();
+      this._setIsCalendars(true);
     });
   };
 
@@ -138,11 +139,14 @@ class NewWriteSubToDoModal extends React.Component {
       toValue: 150,
       duration: 500
     }).start(() => {
-      this._setIsCalendars();
+      this._setIsCalendars(false);
     });
   };
 
   _dismissAnimate = () => {
+    if (this.state.isCalendars) {
+      this._setIsCalendars(false);
+    }
     Animated.timing(this.state.bgOpacity, {
       toValue: 0,
       duration: 500
@@ -175,7 +179,8 @@ class NewWriteSubToDoModal extends React.Component {
       visible,
       setModalProp,
       data,
-      _makeNewSubTodo
+      _makeNewSubTodo,
+      _getSubTodoList
     } = this.props;
     return (
       <Modal
@@ -184,6 +189,9 @@ class NewWriteSubToDoModal extends React.Component {
         visible={visible}
         onShow={() => {
           this._firstLoad();
+        }}
+        onRequestClose={() => {
+          this._dismissAnimate();
         }}
       >
         <TouchableWithoutFeedback
@@ -356,7 +364,7 @@ class NewWriteSubToDoModal extends React.Component {
                     ref={this.setMenuRef}
                     button={
                       <TouchableOpacity onPress={this.showMenu}>
-                        <Text>{this.state.todoValue.project_text}</Text>
+                        <Text>{data.project.project_text}</Text>
                       </TouchableOpacity>
                     }
                   >
@@ -390,10 +398,7 @@ class NewWriteSubToDoModal extends React.Component {
                   justifyContent: "center"
                 }}
                 onPress={() => {
-                  _makeNewSubTodo(
-                    this.state.subTodoValue,
-                    this.state.todoValue
-                  );
+                  _makeNewSubTodo(this.state.subTodoValue, data.slug);
                   setModalProp(false);
                   this.setState({
                     subTodoValue: {

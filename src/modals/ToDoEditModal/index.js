@@ -32,8 +32,7 @@ class ToDoEditModal extends React.Component {
 
       projectValue: {},
       selectedDay: null,
-      isCalendars: false,
-      subtodoValue: []
+      isCalendars: false
     };
   }
 
@@ -149,11 +148,6 @@ class ToDoEditModal extends React.Component {
         tempSlug: this.props.data.slug
       });
     }
-    this.setState({
-      subtodoValue: this.props.subtodo.filter(
-        item => item.todo.slug === this.props.data.slug
-      )
-    });
 
     Animated.timing(this.state.bgOpacity, {
       toValue: 1,
@@ -237,6 +231,9 @@ class ToDoEditModal extends React.Component {
         visible={visible}
         onShow={() => {
           this._firstLoad();
+        }}
+        onRequestClose={() => {
+          this._dismissAnimate();
         }}
       >
         <TouchableWithoutFeedback
@@ -407,7 +404,9 @@ class ToDoEditModal extends React.Component {
                   </TouchableOpacity>
                 )}
               </View>
-              {this.state.subtodoValue.length === 0 ? (
+              {this.props.subtodo.filter(
+                item => item.todo.slug === this.props.data.slug
+              ).length === 0 ? (
                 <TouchableOpacity
                   style={{ flexDirection: "row", alignItems: "center" }}
                   onPress={() => {
@@ -426,33 +425,15 @@ class ToDoEditModal extends React.Component {
               ) : (
                 <View>
                   <FlatList
-                    data={this.state.subtodoValue}
+                    data={this.props.subtodo.filter(
+                      item => item.todo.slug === this.props.data.slug
+                    )}
                     renderItem={({ item, index }) => {
                       if (index === this.state.subtodoValue.length - 1) {
                         return (
                           <>
                             <TouchableOpacity>
                               <Text>{item.subtodo_text}</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity
-                              style={{
-                                flexDirection: "row",
-                                alignItems: "center"
-                              }}
-                              onPress={() => {
-                                this.props._setNewWriteSubToDoModal(true);
-                              }}
-                            >
-                              <View
-                                style={{
-                                  height: 10,
-                                  width: 10,
-                                  backgroundColor: "black"
-                                }}
-                              ></View>
-                              <Text style={{ marginLeft: 10 }}>
-                                하위 작업 추가
-                              </Text>
                             </TouchableOpacity>
                           </>
                         );
@@ -465,6 +446,24 @@ class ToDoEditModal extends React.Component {
                       );
                     }}
                   ></FlatList>
+                  <TouchableOpacity
+                    style={{
+                      flexDirection: "row",
+                      alignItems: "center"
+                    }}
+                    onPress={() => {
+                      this.props._setNewWriteSubToDoModal(true);
+                    }}
+                  >
+                    <View
+                      style={{
+                        height: 10,
+                        width: 10,
+                        backgroundColor: "black"
+                      }}
+                    ></View>
+                    <Text style={{ marginLeft: 10 }}>하위 작업 추가</Text>
+                  </TouchableOpacity>
                 </View>
               )}
             </View>

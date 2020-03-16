@@ -30,7 +30,9 @@ class TodoBox extends React.Component {
 
     this.state = {
       isOpened: false,
-
+      todoSlugForSubTodo: {
+        slug: 0
+      },
       todoDataForModal: {
         todo_text: "",
         project: {
@@ -51,6 +53,12 @@ class TodoBox extends React.Component {
       SubToDoEditModal: false
     };
   }
+
+  _setTodoSlugForSubTodo = slug => {
+    this.setState({
+      todoSlugForSubTodo: slug
+    });
+  };
 
   _setNewWriteSubToDoModal = visible => {
     this.setState({
@@ -77,6 +85,7 @@ class TodoBox extends React.Component {
         todoDataForModal: item
       },
       () => {
+        console.log(this.state.todoDataForModal);
         this.setState({
           ToDoEditModal: visible
         });
@@ -168,7 +177,7 @@ class TodoBox extends React.Component {
     }
   };
 
-  _makeNewSubTodo = async (subtodoValue, todoValue) => {
+  _makeNewSubTodo = async (subtodoValue, slug) => {
     try {
       const config = {
         headers: {}
@@ -185,7 +194,7 @@ class TodoBox extends React.Component {
           subtodoValue.goal_date.getDate() +
           "T00:00:00Z"
       );
-      formData.append("todo_id", todoValue.slug);
+      formData.append("todo_id", slug);
       const res = await axios.post(URL_POST_SUBTODO_LIST, formData, config);
 
       if (res.status == 201) {
@@ -348,10 +357,11 @@ class TodoBox extends React.Component {
           setModalProp={this._setNewWriteSubToDoModal}
           animationType={"none"}
           transparent={true}
-          data={this.props.appStatus.todo}
+          data={this.state.todoDataForModal}
           visible={this.state.NewWriteSubToDoModal}
           // _makeNewTodo={this._makeNewTodo}
           _makeNewSubTodo={this._makeNewSubTodo}
+          _getSubTodoList={this._getSubTodoList}
         />
       </View>
     );
