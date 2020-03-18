@@ -40,7 +40,13 @@ class TodoBox extends React.Component {
         },
         goal_date: null
       },
-      subtodoDataForModal: {},
+      subtodoDataForModal: {
+        subtodo_text: "",
+        todo: {
+          todo_text: ""
+        },
+        goal_date: null
+      },
       projectData: [
         {
           project_text: ""
@@ -85,7 +91,6 @@ class TodoBox extends React.Component {
         todoDataForModal: item
       },
       () => {
-        console.log(this.state.todoDataForModal);
         this.setState({
           ToDoEditModal: visible
         });
@@ -227,6 +232,31 @@ class TodoBox extends React.Component {
     }
   };
 
+  _editSubTodoDetail = async (subTodoValue, slug) => {
+    try {
+      const config = {
+        headers: {}
+      };
+
+      const formData = new FormData();
+      formData.append("subtodo_text", subTodoValue.subtodo_text);
+      formData.append("goal_date", subTodoValue.goal_date);
+
+      const res = await axios.put(
+        URL_PUT_SUBTODO_DETAIL(slug),
+        formData,
+        config
+      );
+
+      if (res.status === 200) {
+        this._getSubTodoList();
+      }
+    } catch (error) {
+      console.log(error);
+      console.error(error);
+    }
+  };
+
   componentDidMount() {
     this._getTodoList();
     this._getProjectList();
@@ -343,6 +373,7 @@ class TodoBox extends React.Component {
           visible={this.state.ToDoEditModal}
           _editTodoDetail={this._editTodoDetail}
           _setNewWriteSubToDoModal={this._setNewWriteSubToDoModal}
+          _setSubToDoEditModal={this._setSubToDoEditModal}
           _getSubTodoList={this._getSubTodoList}
         />
         <SubToDoEditModal
@@ -351,7 +382,7 @@ class TodoBox extends React.Component {
           transparent={true}
           data={this.state.subtodoDataForModal}
           visible={this.state.SubToDoEditModal}
-          // _editTodoDetail={this._editTodoDetail}
+          _editSubTodoDetail={this._editSubTodoDetail}
         />
         <NewWriteSubToDoModal
           setModalProp={this._setNewWriteSubToDoModal}

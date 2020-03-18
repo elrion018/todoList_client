@@ -118,9 +118,9 @@ class NewWriteToDoModal extends React.Component {
     }).start();
   };
 
-  _setIsCalendars = () => {
+  _setIsCalendars = visible => {
     this.setState({
-      isCalendars: !this.state.isCalendars
+      isCalendars: visible
     });
   };
 
@@ -129,7 +129,7 @@ class NewWriteToDoModal extends React.Component {
       toValue: 650,
       duration: 500
     }).start(() => {
-      this._setIsCalendars();
+      this._setIsCalendars(true);
     });
   };
 
@@ -138,7 +138,7 @@ class NewWriteToDoModal extends React.Component {
       toValue: 150,
       duration: 500
     }).start(() => {
-      this._setIsCalendars();
+      this._setIsCalendars(false);
     });
   };
 

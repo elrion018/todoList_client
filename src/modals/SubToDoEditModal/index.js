@@ -20,7 +20,7 @@ class SubToDoEditModal extends React.Component {
     this.state = {
       bgOpacity: new Animated.Value(0),
       pageHeight: new Animated.Value(0),
-      todoValue: {
+      subTodoValue: {
         todo_text: "",
         goal_date: new Date(),
         slug: 0
@@ -29,30 +29,32 @@ class SubToDoEditModal extends React.Component {
       tempTodoText: "",
       tempSlug: 0,
 
-      projectValue: {},
+      todoValue: {},
       selectedDay: null,
       isCalendars: false
     };
   }
 
-  componentDidMount() {}
+  componentDidMount() {
+    console.log(this.props.data, "data");
+  }
 
   _menu = null;
 
   fixDate = () => {
-    let copiedArray = this.state.todoValue;
+    let copiedArray = this.state.subTodoValue;
 
     if (this.state.tempGoalDate === null) {
       copiedArray = {
         ...copiedArray,
-        todo_text: this.state.tempTodoText,
+        subtodo_text: this.state.tempSubTodoText,
         goal_date: this.state.tempGoalDate,
         slug: this.state.tempSlug
       };
     } else {
       copiedArray = {
         ...copiedArray,
-        todo_text: this.state.tempTodoText,
+        subtodo_text: this.state.tempSubTodoText,
         slug: this.state.tempSlug,
         goal_date:
           this.state.tempGoalDate.getFullYear() +
@@ -66,12 +68,12 @@ class SubToDoEditModal extends React.Component {
 
     this.setState(
       {
-        todoValue: copiedArray
+        subTodoValue: copiedArray
       },
       () => {
-        this.props._editTodoDetail(
-          this.state.todoValue,
-          this.state.todoValue.slug
+        this.props._editSubTodoDetail(
+          this.state.subTodoValue,
+          this.state.subTodoValue.slug
         );
       }
     );
@@ -124,7 +126,7 @@ class SubToDoEditModal extends React.Component {
 
   hideMenu = item => {
     this.setState({
-      projectValue: item
+      todoValue: item
     });
     this._menu.hide();
   };
@@ -136,13 +138,13 @@ class SubToDoEditModal extends React.Component {
   _firstLoad = () => {
     if (this.props.data.goal_date === null) {
       this.setState({
-        tempTodoText: this.props.data.todo_text,
+        tempSubTodoText: this.props.data.subtodo_text,
         tempGoalDate: null,
         tempSlug: this.props.data.slug
       });
     } else {
       this.setState({
-        tempTodoText: this.props.data.todo_text,
+        tempSubTodoText: this.props.data.subtodo_text,
         tempGoalDate: new Date(this.props.data.goal_date),
         tempSlug: this.props.data.slug
       });
@@ -153,14 +155,14 @@ class SubToDoEditModal extends React.Component {
       duration: 500
     }).start();
     Animated.timing(this.state.pageHeight, {
-      toValue: 300,
+      toValue: 150,
       duration: 500
     }).start();
   };
 
-  _setIsCalendars = () => {
+  _setIsCalendars = visible => {
     this.setState({
-      isCalendars: !this.state.isCalendars
+      isCalendars: visible
     });
   };
 
@@ -169,7 +171,7 @@ class SubToDoEditModal extends React.Component {
       toValue: 650,
       duration: 500
     }).start(() => {
-      this._setIsCalendars();
+      this._setIsCalendars(true);
     });
   };
 
@@ -178,7 +180,7 @@ class SubToDoEditModal extends React.Component {
       toValue: 150,
       duration: 500
     }).start(() => {
-      this._setIsCalendars();
+      this._setIsCalendars(false);
     });
   };
 
@@ -191,13 +193,13 @@ class SubToDoEditModal extends React.Component {
       toValue: 0,
       duration: 500
     }).start(() => {
-      // this.props.setModalProp(false, {
-      //   todo_text: "",
-      //   project: {
-      //     project_text: ""
-      //   },
-      //   goal_date: null
-      // });
+      this.props.setModalProp(false, {
+        subtodo_text: "",
+        todo: {
+          todo_text: ""
+        },
+        goal_date: null
+      });
     });
   };
 
@@ -205,11 +207,10 @@ class SubToDoEditModal extends React.Component {
     let copiedArray = this.state.todoValue;
     copiedArray = {
       ...copiedArray,
-      todo_text: text
+      subtodo_text: text
     };
-    console.log(copiedArray);
     this.setState({
-      todoValue: copiedArray
+      subTodoValue: copiedArray
     });
   };
 
@@ -366,12 +367,10 @@ class SubToDoEditModal extends React.Component {
                     backgroundColor: "black"
                   }}
                 ></View>
-                <Text style={{ marginLeft: 10 }}>
-                  {/* {data.project.project_text} */}
-                </Text>
+                <Text style={{ marginLeft: 10 }}>{data.todo.todo_text}</Text>
               </View>
               <View>
-                <Text>{data.todo_text}</Text>
+                <Text>{data.subtodo_text}</Text>
                 {this.state.tempGoalDate === null ? (
                   <TouchableOpacity
                     onPress={() => {
@@ -401,14 +400,6 @@ class SubToDoEditModal extends React.Component {
                     </Text>
                   </TouchableOpacity>
                 )}
-                <TouchableOpacity
-                  style={{ flexDirection: "row", alignItems: "center" }}
-                >
-                  <View
-                    style={{ height: 10, width: 10, backgroundColor: "black" }}
-                  ></View>
-                  <Text style={{ marginLeft: 10 }}>하위 작업 추가</Text>
-                </TouchableOpacity>
               </View>
             </View>
           )}

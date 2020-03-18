@@ -32,7 +32,8 @@ class ToDoEditModal extends React.Component {
 
       projectValue: {},
       selectedDay: null,
-      isCalendars: false
+      isCalendars: false,
+      nameChangeMode: true
     };
   }
 
@@ -158,10 +159,15 @@ class ToDoEditModal extends React.Component {
       duration: 500
     }).start();
   };
-
-  _setIsCalendars = () => {
+  _setNameChangeMode = visible => {
     this.setState({
-      isCalendars: !this.state.isCalendars
+      nameChangeMode: visible
+    });
+  };
+
+  _setIsCalendars = visible => {
+    this.setState({
+      isCalendars: visible
     });
   };
 
@@ -170,7 +176,7 @@ class ToDoEditModal extends React.Component {
       toValue: 650,
       duration: 500
     }).start(() => {
-      this._setIsCalendars();
+      this._setIsCalendars(true);
     });
   };
 
@@ -179,7 +185,7 @@ class ToDoEditModal extends React.Component {
       toValue: 150,
       duration: 500
     }).start(() => {
-      this._setIsCalendars();
+      this._setIsCalendars(false);
     });
   };
 
@@ -203,12 +209,12 @@ class ToDoEditModal extends React.Component {
   };
 
   handleTextChange = text => {
+    console.log(text);
     let copiedArray = this.state.todoValue;
     copiedArray = {
       ...copiedArray,
       todo_text: text
     };
-    console.log(copiedArray);
     this.setState({
       todoValue: copiedArray
     });
@@ -222,6 +228,8 @@ class ToDoEditModal extends React.Component {
       visible,
       setModalProp,
       _makeNewTodo,
+      _setSubToDoEditModal,
+      _setNewWriteSubToDoModal,
       data
     } = this.props;
     return (
@@ -373,7 +381,23 @@ class ToDoEditModal extends React.Component {
                 </Text>
               </View>
               <View>
-                <Text>{data.todo_text}</Text>
+                {this.state.nameChangeMode ? (
+                  <TextInput
+                    value={this.state.todoValue.todo_text}
+                    onChangeText={text => {
+                      this.handleTextChange(text);
+                    }}
+                  ></TextInput>
+                ) : (
+                  <TouchableOpacity
+                    onPress={() => {
+                      this._setNameChangeMode(true);
+                    }}
+                  >
+                    <Text>{data.todo_text}</Text>
+                  </TouchableOpacity>
+                )}
+
                 {this.state.tempGoalDate === null ? (
                   <TouchableOpacity
                     onPress={() => {
@@ -410,7 +434,7 @@ class ToDoEditModal extends React.Component {
                 <TouchableOpacity
                   style={{ flexDirection: "row", alignItems: "center" }}
                   onPress={() => {
-                    this.props._setNewWriteSubToDoModal(true);
+                    _setNewWriteSubToDoModal(true);
                   }}
                 >
                   <View
@@ -428,19 +452,13 @@ class ToDoEditModal extends React.Component {
                     data={this.props.subtodo.filter(
                       item => item.todo.slug === this.props.data.slug
                     )}
-                    renderItem={({ item, index }) => {
-                      if (index === this.state.subtodoValue.length - 1) {
-                        return (
-                          <>
-                            <TouchableOpacity>
-                              <Text>{item.subtodo_text}</Text>
-                            </TouchableOpacity>
-                          </>
-                        );
-                      } else {
-                      }
+                    renderItem={({ item }) => {
                       return (
-                        <TouchableOpacity>
+                        <TouchableOpacity
+                          onPress={() => {
+                            _setSubToDoEditModal(true, item);
+                          }}
+                        >
                           <Text>{item.subtodo_text}</Text>
                         </TouchableOpacity>
                       );
@@ -452,7 +470,7 @@ class ToDoEditModal extends React.Component {
                       alignItems: "center"
                     }}
                     onPress={() => {
-                      this.props._setNewWriteSubToDoModal(true);
+                      _setNewWriteSubToDoModal(true);
                     }}
                   >
                     <View
