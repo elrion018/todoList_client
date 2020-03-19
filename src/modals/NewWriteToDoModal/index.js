@@ -151,6 +151,11 @@ class NewWriteToDoModal extends React.Component {
       toValue: 0,
       duration: 500
     }).start(() => {
+      if (this.state.isCalendars) {
+        this.setState({
+          isCalendars: false
+        });
+      }
       this.props.setModalProp(false);
     });
   };

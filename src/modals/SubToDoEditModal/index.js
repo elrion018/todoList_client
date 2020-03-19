@@ -31,7 +31,8 @@ class SubToDoEditModal extends React.Component {
 
       todoValue: {},
       selectedDay: null,
-      isCalendars: false
+      isCalendars: false,
+      nameChangeMode: false
     };
   }
 
@@ -149,6 +150,9 @@ class SubToDoEditModal extends React.Component {
         tempSlug: this.props.data.slug
       });
     }
+    this.setState({
+      subTodoValue: this.props.data
+    });
 
     Animated.timing(this.state.bgOpacity, {
       toValue: 1,
@@ -163,6 +167,11 @@ class SubToDoEditModal extends React.Component {
   _setIsCalendars = visible => {
     this.setState({
       isCalendars: visible
+    });
+  };
+  _setNameChangeMode = visible => {
+    this.setState({
+      nameChangeMode: visible
     });
   };
 
@@ -193,6 +202,16 @@ class SubToDoEditModal extends React.Component {
       toValue: 0,
       duration: 500
     }).start(() => {
+      if (this.state.isCalendars) {
+        this.setState({
+          isCalendars: false
+        });
+      }
+      if (this.state.nameChangeMode) {
+        this.setState({
+          nameChangeMode: false
+        });
+      }
       this.props.setModalProp(false, {
         subtodo_text: "",
         todo: {
@@ -220,8 +239,7 @@ class SubToDoEditModal extends React.Component {
       animationType,
       transparent,
       visible,
-      setModalProp,
-      _makeNewTodo,
+      _editSubTodoDetail,
       data
     } = this.props;
     return (
@@ -358,6 +376,24 @@ class SubToDoEditModal extends React.Component {
                 backgroundColor: "white"
               }}
             >
+              {this.state.nameChangeMode && (
+                <View style={{ flexDirection: "row", alignItems: "center" }}>
+                  <Text>작업 이름 변경</Text>
+                  <View style={{ flex: 1 }}></View>
+                  <TouchableOpacity
+                    style={{ alignItems: "center", justifyContent: "center" }}
+                    onPress={() => {
+                      _editSubTodoDetail(
+                        this.state.subTodoValue,
+                        this.state.subTodoValue.slug
+                      );
+                      this._setNameChangeMode(false);
+                    }}
+                  >
+                    <Icon name={"send"} size={20}></Icon>
+                  </TouchableOpacity>
+                </View>
+              )}
               <View style={{ flexDirection: "row", alignItems: "center" }}>
                 <View
                   style={{
@@ -370,35 +406,52 @@ class SubToDoEditModal extends React.Component {
                 <Text style={{ marginLeft: 10 }}>{data.todo.todo_text}</Text>
               </View>
               <View>
-                <Text>{data.subtodo_text}</Text>
-                {this.state.tempGoalDate === null ? (
-                  <TouchableOpacity
-                    onPress={() => {
-                      this._openCalendarsAnimate();
+                {this.state.nameChangeMode ? (
+                  <TextInput
+                    value={this.state.subTodoValue.subtodo_text}
+                    onChangeText={text => {
+                      this.handleTextChange(text);
                     }}
-                  >
-                    <Text>날짜 없음</Text>
-                  </TouchableOpacity>
+                  ></TextInput>
                 ) : (
-                  <TouchableOpacity
-                    onPress={() => {
-                      this._openCalendarsAnimate();
-                    }}
-                  >
-                    <Text>
-                      {this.state.tempGoalDate.getFullYear() +
-                        "년 " +
-                        (this.state.tempGoalDate.getMonth() + 1) +
-                        "월 " +
-                        this.state.tempGoalDate.getDate() +
-                        "일 " +
-                        this.state.tempGoalDate.getHours() +
-                        ":"}
-                      {this.state.tempGoalDate.getMinutes() < 9
-                        ? "0" + this.state.tempGoalDate.getMinutes()
-                        : this.state.tempGoalDate.getMinutes()}
-                    </Text>
-                  </TouchableOpacity>
+                  <>
+                    <TouchableOpacity
+                      onPress={() => {
+                        this._setNameChangeMode(true);
+                      }}
+                    >
+                      <Text>{data.subtodo_text}</Text>
+                    </TouchableOpacity>
+                    {this.state.tempGoalDate === null ? (
+                      <TouchableOpacity
+                        onPress={() => {
+                          this._openCalendarsAnimate();
+                        }}
+                      >
+                        <Text>날짜 없음</Text>
+                      </TouchableOpacity>
+                    ) : (
+                      <TouchableOpacity
+                        onPress={() => {
+                          this._openCalendarsAnimate();
+                        }}
+                      >
+                        <Text>
+                          {this.state.tempGoalDate.getFullYear() +
+                            "년 " +
+                            (this.state.tempGoalDate.getMonth() + 1) +
+                            "월 " +
+                            this.state.tempGoalDate.getDate() +
+                            "일 " +
+                            this.state.tempGoalDate.getHours() +
+                            ":"}
+                          {this.state.tempGoalDate.getMinutes() < 9
+                            ? "0" + this.state.tempGoalDate.getMinutes()
+                            : this.state.tempGoalDate.getMinutes()}
+                        </Text>
+                      </TouchableOpacity>
+                    )}
+                  </>
                 )}
               </View>
             </View>

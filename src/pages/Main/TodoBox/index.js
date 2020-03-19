@@ -1,5 +1,5 @@
 import React from "react";
-import { View, TouchableOpacity, Text } from "react-native";
+import { View, TouchableOpacity, TouchableHighlight, Text } from "react-native";
 import { SideBar } from "../../../components";
 import Icon from "react-native-vector-icons/FontAwesome";
 import Constants from "expo-constants";
@@ -112,7 +112,8 @@ class TodoBox extends React.Component {
       const res = await axios.get(URL_GET_TODO_LIST, config);
 
       if (res.status === 200) {
-        this.props.todoUpdate(res.data);
+        const temp = res.data.filter(item => item.done === false);
+        this.props.todoUpdate(temp);
       }
     } catch (error) {
       console.log(error);
@@ -224,6 +225,30 @@ class TodoBox extends React.Component {
       const res = await axios.put(URL_PUT_TODO_DETAIL(slug), formData, config);
 
       if (res.status === 200) {
+        console.log(res);
+        this._getTodoList();
+      }
+    } catch (error) {
+      console.log(error);
+      console.error(error);
+    }
+  };
+  _doneForTodo = async (todoValue, slug) => {
+    try {
+      const config = {
+        headers: {}
+      };
+
+      const formData = new FormData();
+      if (todoValue.done) {
+        formData.append("done", false);
+      } else {
+        formData.append("done", true);
+      }
+
+      const res = await axios.put(URL_PUT_TODO_DETAIL(slug), formData, config);
+
+      if (res.status === 200) {
         this._getTodoList();
       }
     } catch (error) {
@@ -241,6 +266,36 @@ class TodoBox extends React.Component {
       const formData = new FormData();
       formData.append("subtodo_text", subTodoValue.subtodo_text);
       formData.append("goal_date", subTodoValue.goal_date);
+
+      const res = await axios.put(
+        URL_PUT_SUBTODO_DETAIL(slug),
+        formData,
+        config
+      );
+
+      if (res.status === 200) {
+        this._getSubTodoList();
+      }
+    } catch (error) {
+      console.log(error);
+      console.error(error);
+    }
+  };
+
+  _doneForSubTodo = async (subTodoValue, slug) => {
+    try {
+      const config = {
+        headers: {}
+      };
+
+      const formData = new FormData();
+      if (subTodoValue.done) {
+        formData.append("subtodo_text", subTodoValue.subtodo_text);
+        formData.append("done", false);
+      } else {
+        formData.append("subtodo_text", subTodoValue.subtodo_text);
+        formData.append("done", true);
+      }
 
       const res = await axios.put(
         URL_PUT_SUBTODO_DETAIL(slug),
@@ -295,44 +350,77 @@ class TodoBox extends React.Component {
               const goalDate = "" + item.goal_date;
               if (item.goal_date === null) {
                 return (
-                  <TouchableOpacity
-                    style={{
-                      borderBottomWidth: 1,
-                      borderBottomColor: "grey",
-                      height: 50,
-                      justifyContent: "center"
-                    }}
-                    onPress={() => {
-                      this._setToDoEditModal(true, item);
-                    }}
-                  >
-                    <Text style={{ color: "black", marginLeft: 10 }}>
-                      {item.todo_text}
-                    </Text>
-                  </TouchableOpacity>
+                  <View style={{ flexDirection: "row", alignItems: "center" }}>
+                    <TouchableOpacity
+                      style={{
+                        width: 30,
+                        height: 30,
+                        borderColor: "grey",
+                        borderRadius: 30 / 2
+                      }}
+                      onPress={() => {
+                        this._doneForTodo(item, item.slug);
+                      }}
+                    ></TouchableOpacity>
+                    <TouchableOpacity
+                      style={{
+                        borderBottomWidth: 1,
+                        borderBottomColor: "grey",
+                        height: 50,
+                        justifyContent: "center"
+                      }}
+                      onPress={() => {
+                        this._setToDoEditModal(true, item);
+                      }}
+                    >
+                      <Text style={{ color: "black", marginLeft: 10 }}>
+                        {item.todo_text}
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
                 );
               } else {
                 return (
-                  <TouchableOpacity
+                  <View
                     style={{
+                      flexDirection: "row",
+                      height: 50,
                       borderBottomWidth: 1,
                       borderBottomColor: "grey",
-                      height: 50,
-                      justifyContent: "center"
-                    }}
-                    onPress={() => {
-                      this._setToDoEditModal(true, item);
+                      alignItems: "center"
                     }}
                   >
-                    <Text style={{ color: "black", marginLeft: 10 }}>
-                      {item.todo_text}
-                    </Text>
-                    <Text style={{ color: "black", marginLeft: 10 }}>
-                      {goalDate.substring(0, 10) +
-                        " " +
-                        goalDate.substring(11, 16)}
-                    </Text>
-                  </TouchableOpacity>
+                    <TouchableOpacity
+                      style={{
+                        width: 25,
+                        height: 25,
+                        borderColor: "grey",
+                        borderWidth: 2,
+                        borderRadius: 25 / 2,
+                        marginLeft: 7
+                      }}
+                      onPress={() => {
+                        this._doneForTodo(item, item.slug);
+                      }}
+                    ></TouchableOpacity>
+                    <TouchableOpacity
+                      style={{
+                        justifyContent: "center"
+                      }}
+                      onPress={() => {
+                        this._setToDoEditModal(true, item);
+                      }}
+                    >
+                      <Text style={{ color: "black", marginLeft: 10 }}>
+                        {item.todo_text}
+                      </Text>
+                      <Text style={{ color: "black", marginLeft: 10 }}>
+                        {goalDate.substring(0, 10) +
+                          " " +
+                          goalDate.substring(11, 16)}
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
                 );
               }
             }}
@@ -375,6 +463,7 @@ class TodoBox extends React.Component {
           _setNewWriteSubToDoModal={this._setNewWriteSubToDoModal}
           _setSubToDoEditModal={this._setSubToDoEditModal}
           _getSubTodoList={this._getSubTodoList}
+          _doneForSubTodo={this._doneForSubTodo}
         />
         <SubToDoEditModal
           setModalProp={this._setSubToDoEditModal}
@@ -390,7 +479,6 @@ class TodoBox extends React.Component {
           transparent={true}
           data={this.state.todoDataForModal}
           visible={this.state.NewWriteSubToDoModal}
-          // _makeNewTodo={this._makeNewTodo}
           _makeNewSubTodo={this._makeNewSubTodo}
           _getSubTodoList={this._getSubTodoList}
         />

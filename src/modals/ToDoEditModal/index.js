@@ -33,7 +33,7 @@ class ToDoEditModal extends React.Component {
       projectValue: {},
       selectedDay: null,
       isCalendars: false,
-      nameChangeMode: true
+      nameChangeMode: false
     };
   }
 
@@ -149,6 +149,9 @@ class ToDoEditModal extends React.Component {
         tempSlug: this.props.data.slug
       });
     }
+    this.setState({
+      todoValue: this.props.data
+    });
 
     Animated.timing(this.state.bgOpacity, {
       toValue: 1,
@@ -198,6 +201,16 @@ class ToDoEditModal extends React.Component {
       toValue: 0,
       duration: 500
     }).start(() => {
+      if (this.state.isCalendars) {
+        this.setState({
+          isCalendars: false
+        });
+      }
+      if (this.state.nameChangeMode) {
+        this.setState({
+          nameChangeMode: false
+        });
+      }
       this.props.setModalProp(false, {
         todo_text: "",
         project: {
@@ -209,7 +222,6 @@ class ToDoEditModal extends React.Component {
   };
 
   handleTextChange = text => {
-    console.log(text);
     let copiedArray = this.state.todoValue;
     copiedArray = {
       ...copiedArray,
@@ -226,10 +238,10 @@ class ToDoEditModal extends React.Component {
       animationType,
       transparent,
       visible,
-      setModalProp,
-      _makeNewTodo,
+      _editTodoDetail,
       _setSubToDoEditModal,
       _setNewWriteSubToDoModal,
+      _doneForSubTodo,
       data
     } = this.props;
     return (
@@ -361,12 +373,30 @@ class ToDoEditModal extends React.Component {
                 borderTopRightRadius: 12,
                 width: "100%",
                 height: 300,
-
                 paddingRight: 32,
                 paddingLeft: 32,
                 backgroundColor: "white"
               }}
             >
+              {this.state.nameChangeMode && (
+                <View style={{ flexDirection: "row", alignItems: "center" }}>
+                  <Text>작업 이름 변경</Text>
+                  <View style={{ flex: 1 }}></View>
+                  <TouchableOpacity
+                    style={{ alignItems: "center", justifyContent: "center" }}
+                    onPress={() => {
+                      _editTodoDetail(
+                        this.state.todoValue,
+                        this.state.todoValue.slug
+                      );
+                      this._setNameChangeMode(false);
+                    }}
+                  >
+                    <Icon name={"send"} size={20}></Icon>
+                  </TouchableOpacity>
+                </View>
+              )}
+
               <View style={{ flexDirection: "row", alignItems: "center" }}>
                 <View
                   style={{
@@ -389,43 +419,44 @@ class ToDoEditModal extends React.Component {
                     }}
                   ></TextInput>
                 ) : (
-                  <TouchableOpacity
-                    onPress={() => {
-                      this._setNameChangeMode(true);
-                    }}
-                  >
-                    <Text>{data.todo_text}</Text>
-                  </TouchableOpacity>
-                )}
-
-                {this.state.tempGoalDate === null ? (
-                  <TouchableOpacity
-                    onPress={() => {
-                      this._openCalendarsAnimate();
-                    }}
-                  >
-                    <Text>날짜 없음</Text>
-                  </TouchableOpacity>
-                ) : (
-                  <TouchableOpacity
-                    onPress={() => {
-                      this._openCalendarsAnimate();
-                    }}
-                  >
-                    <Text>
-                      {this.state.tempGoalDate.getFullYear() +
-                        "년 " +
-                        (this.state.tempGoalDate.getMonth() + 1) +
-                        "월 " +
-                        this.state.tempGoalDate.getDate() +
-                        "일 " +
-                        this.state.tempGoalDate.getHours() +
-                        ":"}
-                      {this.state.tempGoalDate.getMinutes() < 9
-                        ? "0" + this.state.tempGoalDate.getMinutes()
-                        : this.state.tempGoalDate.getMinutes()}
-                    </Text>
-                  </TouchableOpacity>
+                  <>
+                    <TouchableOpacity
+                      onPress={() => {
+                        this._setNameChangeMode(true);
+                      }}
+                    >
+                      <Text>{data.todo_text}</Text>
+                    </TouchableOpacity>
+                    {this.state.tempGoalDate === null ? (
+                      <TouchableOpacity
+                        onPress={() => {
+                          this._openCalendarsAnimate();
+                        }}
+                      >
+                        <Text>날짜 없음</Text>
+                      </TouchableOpacity>
+                    ) : (
+                      <TouchableOpacity
+                        onPress={() => {
+                          this._openCalendarsAnimate();
+                        }}
+                      >
+                        <Text>
+                          {this.state.tempGoalDate.getFullYear() +
+                            "년 " +
+                            (this.state.tempGoalDate.getMonth() + 1) +
+                            "월 " +
+                            this.state.tempGoalDate.getDate() +
+                            "일 " +
+                            this.state.tempGoalDate.getHours() +
+                            ":"}
+                          {this.state.tempGoalDate.getMinutes() < 9
+                            ? "0" + this.state.tempGoalDate.getMinutes()
+                            : this.state.tempGoalDate.getMinutes()}
+                        </Text>
+                      </TouchableOpacity>
+                    )}
+                  </>
                 )}
               </View>
               {this.props.subtodo.filter(
@@ -453,14 +484,52 @@ class ToDoEditModal extends React.Component {
                       item => item.todo.slug === this.props.data.slug
                     )}
                     renderItem={({ item }) => {
+                      console.log(item);
                       return (
-                        <TouchableOpacity
-                          onPress={() => {
-                            _setSubToDoEditModal(true, item);
+                        <View
+                          style={{
+                            flexDirection: "row",
+                            height: 50,
+                            borderBottomWidth: 1,
+                            borderBottomColor: "grey",
+                            alignItems: "center"
                           }}
                         >
-                          <Text>{item.subtodo_text}</Text>
-                        </TouchableOpacity>
+                          <TouchableOpacity
+                            style={[
+                              {
+                                width: 25,
+                                height: 25,
+                                borderColor: "grey",
+                                borderWidth: 2,
+                                borderRadius: 25 / 2,
+                                marginLeft: 7
+                              },
+                              item.done && {
+                                borderColor: "blue",
+                                backgroundColor: "blue"
+                              }
+                            ]}
+                            onPress={() => {
+                              _doneForSubTodo(item, item.slug);
+                            }}
+                          ></TouchableOpacity>
+                          <TouchableOpacity
+                            style={{ marginLeft: 7 }}
+                            onPress={() => {
+                              _setSubToDoEditModal(true, item);
+                            }}
+                            disabled={item.done ? true : false}
+                          >
+                            <Text
+                              style={{
+                                color: item.done ? "grey" : "black"
+                              }}
+                            >
+                              {item.subtodo_text}
+                            </Text>
+                          </TouchableOpacity>
+                        </View>
                       );
                     }}
                   ></FlatList>
