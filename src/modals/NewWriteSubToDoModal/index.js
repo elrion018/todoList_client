@@ -323,7 +323,7 @@ class NewWriteSubToDoModal extends React.Component {
                   onChangeText={text => this.handleTextChange(text)}
                 ></TextInput>
               </View>
-              <Text>{this.state.subTodoValue.subtodo_text}</Text>
+
               <View style={{ flexDirection: "row" }}>
                 {this.state.subTodoValue.goal_date === null && (
                   <TouchableOpacity
@@ -358,32 +358,6 @@ class NewWriteSubToDoModal extends React.Component {
                     </Text>
                   </TouchableOpacity>
                 )}
-                <View>
-                  <Menu
-                    style={{ width: 70 }}
-                    ref={this.setMenuRef}
-                    button={
-                      <TouchableOpacity onPress={this.showMenu}>
-                        <Text>{data.project.project_text}</Text>
-                      </TouchableOpacity>
-                    }
-                  >
-                    {/* {data.map((item, index) => {
-                      return (
-                        <>
-                          <MenuItem
-                            onPress={() => {
-                              this.hideMenu(item);
-                            }}
-                          >
-                            {item.project_text}
-                          </MenuItem>
-                          <MenuDivider />
-                        </>
-                      );
-                    })} */}
-                  </Menu>
-                </View>
               </View>
               <TouchableOpacity
                 style={{

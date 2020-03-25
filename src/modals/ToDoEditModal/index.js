@@ -10,7 +10,6 @@ import {
   TouchableHighlightBase
 } from "react-native";
 import { Calendar, CalendarList, Agenda } from "react-native-calendars";
-import Menu, { MenuItem, MenuDivider } from "react-native-material-menu";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { FlatList } from "react-native-gesture-handler";
 
@@ -459,7 +458,8 @@ class ToDoEditModal extends React.Component {
                   </>
                 )}
               </View>
-              {this.props.subtodo.filter(
+              {this.props.subtodo.length !== 0 &&
+              this.props.subtodo.filter(
                 item => item.todo.slug === this.props.data.slug
               ).length === 0 ? (
                 <TouchableOpacity
@@ -478,18 +478,17 @@ class ToDoEditModal extends React.Component {
                   <Text style={{ marginLeft: 10 }}>하위 작업 추가</Text>
                 </TouchableOpacity>
               ) : (
-                <View>
+                <View style={{ flex: 1 }}>
                   <FlatList
                     data={this.props.subtodo.filter(
                       item => item.todo.slug === this.props.data.slug
                     )}
                     renderItem={({ item }) => {
-                      console.log(item);
                       return (
                         <View
                           style={{
                             flexDirection: "row",
-                            height: 50,
+                            paddingVertical: 10,
                             borderBottomWidth: 1,
                             borderBottomColor: "grey",
                             alignItems: "center"

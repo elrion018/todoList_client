@@ -21,7 +21,6 @@ import {
   NewWriteSubToDoModal
 } from "../../../modals";
 import axios from "axios";
-import moment from "moment";
 
 class ToDay extends React.Component {
   constructor() {
@@ -318,34 +317,11 @@ class ToDay extends React.Component {
       console.error(error);
     }
   };
-  _makeFlatListForWeek = () => {
-    if (this.props.appStatus.todo.length !== 0) {
-      let tempArr = [];
-      for (let i = 1; i < 7; i++) {
-        let today = moment();
-        let temp = this.props.appStatus.todo.filter(
-          item => moment(item.goal_date).diff(today, "days") === i
-        );
-        tempArr.push(temp);
-      }
-      console.log(tempArr, "tempArr");
-      tempArr.map(items => {
-        return (
-          <View>
-            {items.map(item => {
-              return <Text>hi</Text>;
-            })}
-          </View>
-        );
-      });
-    }
-  };
 
   componentDidMount() {
     this._getTodoListForToDay();
     this._getProjectList();
     this._getSubTodoList();
-    // this._makeFlatListForWeek();
   }
 
   render() {
@@ -374,7 +350,7 @@ class ToDay extends React.Component {
                 new Date(item.goal_date).getMonth() === new Date().getMonth() &&
                 new Date(item.goal_date).getDate() < new Date().getDate())
           );
-
+    console.log(new Date().getDate());
     return (
       <View style={{ flex: 1 }}>
         <View style={{ height: Constants.statusBarHeight }}></View>
@@ -400,8 +376,184 @@ class ToDay extends React.Component {
           </View>
         </View>
         <View>
-          <Text> test</Text>
-          {this._makeFlatListForWeek()}
+          <View style={{ flexDirection: "row" }}>
+            <Text>기한이 지난</Text>
+          </View>
+          {notTodayData.length !== 0 && (
+            <FlatList
+              data={notTodayData}
+              renderItem={({ item, index }) => {
+                const goalDate = "" + item.goal_date;
+
+                if (item.goal_date === null) {
+                  return (
+                    <View
+                      style={{ flexDirection: "row", alignItems: "center" }}
+                    >
+                      <TouchableOpacity
+                        style={{
+                          width: 30,
+                          height: 30,
+                          borderColor: "grey",
+                          borderRadius: 30 / 2
+                        }}
+                        onPress={() => {
+                          this._doneForTodo(item, item.slug);
+                        }}
+                      ></TouchableOpacity>
+                      <TouchableOpacity
+                        style={{
+                          borderBottomWidth: 1,
+                          borderBottomColor: "grey",
+                          height: 50,
+                          justifyContent: "center"
+                        }}
+                        onPress={() => {
+                          this._setToDoEditModal(true, item);
+                        }}
+                      >
+                        <Text style={{ color: "black", marginLeft: 10 }}>
+                          {item.todo_text}
+                        </Text>
+                      </TouchableOpacity>
+                    </View>
+                  );
+                } else {
+                  return (
+                    <View
+                      style={{
+                        flexDirection: "row",
+                        height: 50,
+                        borderBottomWidth: 1,
+                        borderBottomColor: "grey",
+                        alignItems: "center"
+                      }}
+                    >
+                      <TouchableOpacity
+                        style={{
+                          width: 25,
+                          height: 25,
+                          borderColor: "grey",
+                          borderWidth: 2,
+                          borderRadius: 25 / 2,
+                          marginLeft: 7
+                        }}
+                        onPress={() => {
+                          this._doneForTodo(item, item.slug);
+                        }}
+                      ></TouchableOpacity>
+                      <TouchableOpacity
+                        style={{
+                          justifyContent: "center"
+                        }}
+                        onPress={() => {
+                          this._setToDoEditModal(true, item);
+                        }}
+                      >
+                        <Text style={{ color: "black", marginLeft: 10 }}>
+                          {item.todo_text}
+                        </Text>
+                        <Text style={{ color: "black", marginLeft: 10 }}>
+                          {goalDate.substring(0, 10) +
+                            " " +
+                            goalDate.substring(11, 16)}
+                        </Text>
+                      </TouchableOpacity>
+                    </View>
+                  );
+                }
+              }}
+            />
+          )}
+          <View style={{ flexDirection: "row" }}>
+            <Text>오늘</Text>
+          </View>
+          {todayData.length !== 0 && (
+            <FlatList
+              data={todayData}
+              renderItem={({ item, index }) => {
+                const goalDate = "" + item.goal_date;
+
+                if (item.goal_date === null) {
+                  return (
+                    <View
+                      style={{ flexDirection: "row", alignItems: "center" }}
+                    >
+                      <TouchableOpacity
+                        style={{
+                          width: 30,
+                          height: 30,
+                          borderColor: "grey",
+                          borderRadius: 30 / 2
+                        }}
+                        onPress={() => {
+                          this._doneForTodo(item, item.slug);
+                        }}
+                      ></TouchableOpacity>
+                      <TouchableOpacity
+                        style={{
+                          borderBottomWidth: 1,
+                          borderBottomColor: "grey",
+                          height: 50,
+                          justifyContent: "center"
+                        }}
+                        onPress={() => {
+                          this._setToDoEditModal(true, item);
+                        }}
+                      >
+                        <Text style={{ color: "black", marginLeft: 10 }}>
+                          {item.todo_text}
+                        </Text>
+                      </TouchableOpacity>
+                    </View>
+                  );
+                } else {
+                  return (
+                    <View
+                      style={{
+                        flexDirection: "row",
+                        height: 50,
+                        borderBottomWidth: 1,
+                        borderBottomColor: "grey",
+                        alignItems: "center"
+                      }}
+                    >
+                      <TouchableOpacity
+                        style={{
+                          width: 25,
+                          height: 25,
+                          borderColor: "grey",
+                          borderWidth: 2,
+                          borderRadius: 25 / 2,
+                          marginLeft: 7
+                        }}
+                        onPress={() => {
+                          this._doneForTodo(item, item.slug);
+                        }}
+                      ></TouchableOpacity>
+                      <TouchableOpacity
+                        style={{
+                          justifyContent: "center"
+                        }}
+                        onPress={() => {
+                          this._setToDoEditModal(true, item);
+                        }}
+                      >
+                        <Text style={{ color: "black", marginLeft: 10 }}>
+                          {item.todo_text}
+                        </Text>
+                        <Text style={{ color: "black", marginLeft: 10 }}>
+                          {goalDate.substring(0, 10) +
+                            " " +
+                            goalDate.substring(11, 16)}
+                        </Text>
+                      </TouchableOpacity>
+                    </View>
+                  );
+                }
+              }}
+            />
+          )}
         </View>
         <TouchableOpacity
           style={{

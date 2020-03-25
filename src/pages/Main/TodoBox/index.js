@@ -1,12 +1,10 @@
 import React from "react";
 import { View, TouchableOpacity, TouchableHighlight, Text } from "react-native";
-import { SideBar } from "../../../components";
 import Icon from "react-native-vector-icons/FontAwesome";
 import Constants from "expo-constants";
 import { FlatList } from "react-native-gesture-handler";
 import { connect } from "react-redux";
 import * as actions from "../../../actions/appStatus";
-
 import {
   URL_GET_TODO_LIST,
   URL_GET_PROJECT_LIST,
@@ -60,6 +58,10 @@ class TodoBox extends React.Component {
     };
   }
 
+  toggleDrawer = () => {
+    this.props.navigation.toggleDrawer();
+  };
+
   _setTodoSlugForSubTodo = slug => {
     this.setState({
       todoSlugForSubTodo: slug
@@ -112,7 +114,11 @@ class TodoBox extends React.Component {
       const res = await axios.get(URL_GET_TODO_LIST, config);
 
       if (res.status === 200) {
-        const temp = res.data.filter(item => item.done === false);
+        console.log(res.data);
+        const temp =
+          res.data.length !== 0
+            ? res.data.filter(item => item.done === false)
+            : res.data;
         this.props.todoUpdate(temp);
       }
     } catch (error) {
@@ -145,8 +151,8 @@ class TodoBox extends React.Component {
         headers: {}
       };
       const res = await axios.get(URL_GET_SUBTODO_LIST, config);
-
-      if (res.status === 200) {
+      console.log(res, "subtodo");
+      if (res.status === 200 && res.data.length !== 0) {
         this.props.subtodoUpdate(res.data);
       }
     } catch (error) {
@@ -252,6 +258,7 @@ class TodoBox extends React.Component {
         this._getTodoList();
       }
     } catch (error) {
+      console.log("1");
       console.log(error);
       console.error(error);
     }
@@ -316,11 +323,11 @@ class TodoBox extends React.Component {
     this._getTodoList();
     this._getProjectList();
     this._getSubTodoList();
-    this.focusListener1 = this.props.navigation.addListener("didFocus", () => {
-      this._getTodoList();
-      this._getProjectList();
-      this._getSubTodoList();
-    });
+    // this.focusListener1 = this.navigator.addListener("didFocus", () => {
+    //   this._getTodoList();
+    //   this._getProjectList();
+    //   this._getSubTodoList();
+    // });
   }
 
   render() {
@@ -335,7 +342,12 @@ class TodoBox extends React.Component {
             alignItems: "center"
           }}
         >
-          <TouchableOpacity style={{ marginLeft: 10 }}>
+          <TouchableOpacity
+            style={{ marginLeft: 10 }}
+            onPress={() => {
+              this.toggleDrawer();
+            }}
+          >
             <Icon name="bars" size={30}></Icon>
           </TouchableOpacity>
 

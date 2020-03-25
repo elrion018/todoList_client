@@ -1,61 +1,48 @@
-import React from "react";
-import { createSwitchNavigator, createAppContainer } from "react-navigation";
-import { createStackNavigator } from "react-navigation-stack";
-import { Home, TodoBox, NextWeek } from "../../pages/Main";
-import { fadeIn, fromBottom } from "react-navigation-transitions";
+import * as React from "react";
 
-const HomeNavigator = createStackNavigator(
-  {
-    Home: {
-      screen: Home,
-      navigationOptions: ({ navigation }) => ({
-        gesturesEnabled: false,
-        header: null
-      })
-    },
-    TodoBox: {
-      screen: TodoBox,
-      navigationOptions: ({ navigation }) => ({
-        gesturesEnabled: false,
-        header: null
-      })
-    },
-    NextWeek: {
-      screen: NextWeek,
-      navigationOptions: ({ navigation }) => ({
-        gesturesEnabled: false,
-        header: null
-      })
-    }
-  },
-  {
-    initialRouteName: "TodoBox"
-  }
-);
+import { NavigationContainer } from "@react-navigation/native";
+import { createDrawerNavigator } from "@react-navigation/drawer";
+import { TodoBox, ToDay, NextWeek } from "../../pages/Main";
+function TodoBoxFuc({ navigation }) {
+  return <TodoBox navigation={navigation}></TodoBox>;
+}
 
-const RootNavigator = createStackNavigator(
-  {
-    HomeNavigator: {
-      screen: HomeNavigator,
-      navigationOptions: ({ navigation }) => ({
-        gesturesEnabled: false,
-        header: null
-      })
-    }
-  },
-  {
-    initialRouteName: "HomeNavigator",
-    transitionConfig: () => fadeIn()
-  }
-);
+function ToDayFuc({ navigation }) {
+  return <ToDay navigation={navigation}></ToDay>;
+}
 
-const AppNavigator = createSwitchNavigator(
-  {
-    RootNavigator
-  },
-  {
-    initialRouteName: "RootNavigator"
-  }
-);
+function NextWeekFuc({ navigation }) {
+  return <NextWeek navigation={navigation}></NextWeek>;
+}
 
-export default createAppContainer(AppNavigator);
+const Drawer = createDrawerNavigator();
+
+function MyDrawer() {
+  return (
+    <Drawer.Navigator initialRouteName="TodoBox">
+      <Drawer.Screen
+        name="TodoBox"
+        component={TodoBoxFuc}
+        options={{ drawerLabel: "관리함" }}
+      />
+      <Drawer.Screen
+        name="ToDay"
+        component={ToDayFuc}
+        options={{ drawerLabel: "오늘" }}
+      />
+      <Drawer.Screen
+        name="NextWeek"
+        component={NextWeekFuc}
+        options={{ drawerLabel: "다음 7일" }}
+      />
+    </Drawer.Navigator>
+  );
+}
+
+export default function AppNavigator() {
+  return (
+    <NavigationContainer>
+      <MyDrawer />
+    </NavigationContainer>
+  );
+}

@@ -1,5 +1,5 @@
-import Home from "./Home";
 import TodoBox from "./TodoBox";
+import ToDay from "./ToDay";
 import NextWeek from "./NextWeek";
 
-export { Home, TodoBox, NextWeek };
+export { TodoBox, ToDay, NextWeek };

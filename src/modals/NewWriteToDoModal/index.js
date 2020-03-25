@@ -368,20 +368,21 @@ class NewWriteToDoModal extends React.Component {
                       </TouchableOpacity>
                     }
                   >
-                    {data.map((item, index) => {
-                      return (
-                        <>
-                          <MenuItem
-                            onPress={() => {
-                              this.hideMenu(item);
-                            }}
-                          >
-                            {item.project_text}
-                          </MenuItem>
-                          <MenuDivider />
-                        </>
-                      );
-                    })}
+                    {data.length !== 0 &&
+                      data.map((item, index) => {
+                        return (
+                          <>
+                            <MenuItem
+                              onPress={() => {
+                                this.hideMenu(item);
+                              }}
+                            >
+                              {item.project_text}
+                            </MenuItem>
+                            <MenuDivider />
+                          </>
+                        );
+                      })}
                   </Menu>
                 </View>
               </View>
