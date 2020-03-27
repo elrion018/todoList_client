@@ -1,5 +1,5 @@
 import React from "react";
-import { View, TouchableOpacity, Text } from "react-native";
+import { View, TouchableOpacity, Text, ScrollView } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
 import Constants from "expo-constants";
 import { FlatList } from "react-native-gesture-handler";
@@ -375,7 +375,7 @@ class ToDay extends React.Component {
             <Text style={{ color: "white" }}>오늘</Text>
           </View>
         </View>
-        <View>
+        <ScrollView>
           <View style={{ flexDirection: "row" }}>
             <Text>기한이 지난</Text>
           </View>
@@ -554,7 +554,7 @@ class ToDay extends React.Component {
               }}
             />
           )}
-        </View>
+        </ScrollView>
         <TouchableOpacity
           style={{
             position: "absolute",

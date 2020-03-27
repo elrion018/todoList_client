@@ -83,7 +83,7 @@ class NewWriteToDoModal extends React.Component {
     this.setState({
       tempGoalDate: new Date(
         convertedDateString[0],
-        convertedDateString[1],
+        convertedDateString[1] - 1,
         convertedDateString[2]
       )
     });

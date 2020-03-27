@@ -1,5 +1,5 @@
 import React from "react";
-import { View, TouchableOpacity, Text } from "react-native";
+import { View, TouchableOpacity, Text, ScrollView } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
 import Constants from "expo-constants";
 import { FlatList } from "react-native-gesture-handler";
@@ -321,22 +321,122 @@ class ToDay extends React.Component {
   _makeFlatListForWeek = () => {
     if (this.props.appStatus.todo.length !== 0) {
       let tempArr = [];
-      for (let i = 1; i < 7; i++) {
+      const days = [
+        "월요일",
+        "화요일",
+        "수요일",
+        "목요일",
+        "금요일",
+        "토요일",
+        "일요일"
+      ];
+      for (let i = 0; i < 7; i++) {
         let today = moment();
         let temp = this.props.appStatus.todo.filter(
-          item => moment(item.goal_date).diff(today, "days") === i
+          item =>
+            Math.ceil(moment(item.goal_date).diff(today, "days", true)) === i
         );
         tempArr.push(temp);
       }
-      console.log(tempArr, "tempArr");
-      tempArr.map(items => {
-        return (
-          <View>
-            {items.map(item => {
-              return <Text>hi</Text>;
-            })}
-          </View>
-        );
+      return tempArr.map((items, index) => {
+        if (items.length !== 0) {
+          const time = moment(items[0].goal_date);
+          return (
+            <View>
+              <Text>
+                {time.month() +
+                  1 +
+                  "월 " +
+                  time.date() +
+                  "일 " +
+                  days[time.day()]}
+              </Text>
+              <FlatList
+                data={items}
+                renderItem={({ item }) => {
+                  const goalDate = "" + item.goal_date;
+                  if (item.goal_date === null) {
+                    return (
+                      <View
+                        style={{ flexDirection: "row", alignItems: "center" }}
+                      >
+                        <TouchableOpacity
+                          style={{
+                            width: 30,
+                            height: 30,
+                            borderColor: "grey",
+                            borderRadius: 30 / 2
+                          }}
+                          onPress={() => {
+                            this._doneForTodo(item, item.slug);
+                          }}
+                        ></TouchableOpacity>
+                        <TouchableOpacity
+                          style={{
+                            borderBottomWidth: 1,
+                            borderBottomColor: "grey",
+                            height: 50,
+                            justifyContent: "center"
+                          }}
+                          onPress={() => {
+                            this._setToDoEditModal(true, item);
+                          }}
+                        >
+                          <Text style={{ color: "black", marginLeft: 10 }}>
+                            {item.todo_text}
+                          </Text>
+                        </TouchableOpacity>
+                      </View>
+                    );
+                  } else {
+                    return (
+                      <View
+                        style={{
+                          flexDirection: "row",
+                          height: 50,
+                          borderBottomWidth: 1,
+                          borderBottomColor: "grey",
+                          alignItems: "center"
+                        }}
+                      >
+                        <TouchableOpacity
+                          style={{
+                            width: 25,
+                            height: 25,
+                            borderColor: "grey",
+                            borderWidth: 2,
+                            borderRadius: 25 / 2,
+                            marginLeft: 7
+                          }}
+                          onPress={() => {
+                            this._doneForTodo(item, item.slug);
+                          }}
+                        ></TouchableOpacity>
+                        <TouchableOpacity
+                          style={{
+                            justifyContent: "center"
+                          }}
+                          onPress={() => {
+                            this._setToDoEditModal(true, item);
+                          }}
+                        >
+                          <Text style={{ color: "black", marginLeft: 10 }}>
+                            {item.todo_text}
+                          </Text>
+                          <Text style={{ color: "black", marginLeft: 10 }}>
+                            {goalDate.substring(0, 10) +
+                              " " +
+                              goalDate.substring(11, 16)}
+                          </Text>
+                        </TouchableOpacity>
+                      </View>
+                    );
+                  }
+                }}
+              />
+            </View>
+          );
+        }
       });
     }
   };
@@ -345,36 +445,9 @@ class ToDay extends React.Component {
     this._getTodoListForToDay();
     this._getProjectList();
     this._getSubTodoList();
-    // this._makeFlatListForWeek();
   }
 
   render() {
-    let todayData =
-      this.props.appStatus.todo.length === 0
-        ? this.props.appStatus.todo
-        : this.props.appStatus.todo.filter(
-            item =>
-              new Date(item.goal_date).getFullYear() ===
-                new Date().getFullYear() &&
-              new Date(item.goal_date).getMonth() === new Date().getMonth() &&
-              new Date(item.goal_date).getDate() === new Date().getDate()
-          );
-    let notTodayData =
-      this.props.appStatus.todo.length === 0
-        ? this.props.appStatus.todo
-        : this.props.appStatus.todo.filter(
-            item =>
-              new Date(item.goal_date).getFullYear() <
-                new Date().getFullYear() ||
-              (new Date(item.goal_date).getFullYear() ===
-                new Date().getFullYear() &&
-                new Date(item.goal_date).getMonth() < new Date().getMonth()) ||
-              (new Date(item.goal_date).getFullYear() ===
-                new Date().getFullYear() &&
-                new Date(item.goal_date).getMonth() === new Date().getMonth() &&
-                new Date(item.goal_date).getDate() < new Date().getDate())
-          );
-
     return (
       <View style={{ flex: 1 }}>
         <View style={{ height: Constants.statusBarHeight }}></View>
@@ -396,13 +469,10 @@ class ToDay extends React.Component {
           </TouchableOpacity>
 
           <View style={{ marginLeft: 40 }}>
-            <Text style={{ color: "white" }}>오늘</Text>
+            <Text style={{ color: "white" }}>다음 7일</Text>
           </View>
         </View>
-        <View>
-          <Text> test</Text>
-          {this._makeFlatListForWeek()}
-        </View>
+        <ScrollView>{this._makeFlatListForWeek()}</ScrollView>
         <TouchableOpacity
           style={{
             position: "absolute",
