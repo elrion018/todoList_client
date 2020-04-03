@@ -2,23 +2,23 @@ import * as types from "./types";
 
 //appStatus
 
-export const ProjectUpdate = project => {
+export const ProjectUpdate = (project) => {
   return {
-    type: types.USER_UPDATE,
-    project
+    type: types.PROJECT_UPDATE,
+    project,
   };
 };
 
-export const TodoUpdate = todo => {
+export const TodoUpdate = (todo) => {
   return {
     type: types.TODO_UPDATE,
-    todo
+    todo,
   };
 };
 
-export const SubTodoUpdate = subtodo => {
+export const SubTodoUpdate = (subtodo) => {
   return {
     type: types.SUBTODO_UPDATE,
-    subtodo
+    subtodo,
   };
 };

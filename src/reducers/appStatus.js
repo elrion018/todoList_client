@@ -3,7 +3,7 @@ import * as types from "../actions/appStatus/types";
 const initialState = {
   project: [],
   todo: [],
-  subtodo: []
+  subtodo: [],
 };
 
 const appStatus = (state = initialState, action) => {
@@ -11,19 +11,19 @@ const appStatus = (state = initialState, action) => {
     case types.PROJECT_UPDATE:
       return {
         ...state,
-        project: [...action.project]
+        project: action.project,
       };
 
     case types.TODO_UPDATE:
       return {
         ...state,
-        todo: action.todo
+        todo: action.todo,
       };
 
     case types.SUBTODO_UPDATE:
       return {
         ...state,
-        subtodo: action.subtodo
+        subtodo: action.subtodo,
       };
 
     default:

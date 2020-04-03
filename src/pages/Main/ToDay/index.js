@@ -12,13 +12,13 @@ import {
   URL_PUT_TODO_DETAIL,
   URL_GET_SUBTODO_LIST,
   URL_POST_SUBTODO_LIST,
-  URL_PUT_SUBTODO_DETAIL
+  URL_PUT_SUBTODO_DETAIL,
 } from "../../../globals/api";
 import {
   NewWriteToDoModal,
   ToDoEditModal,
   SubToDoEditModal,
-  NewWriteSubToDoModal
+  NewWriteSubToDoModal,
 } from "../../../modals";
 import axios from "axios";
 
@@ -29,32 +29,32 @@ class ToDay extends React.Component {
     this.state = {
       isOpened: false,
       todoSlugForSubTodo: {
-        slug: 0
+        slug: 0,
       },
       todoDataForModal: {
         todo_text: "",
         project: {
-          project_text: ""
+          project_text: "",
         },
-        goal_date: null
+        goal_date: null,
       },
       subtodoDataForModal: {
         subtodo_text: "",
         todo: {
-          todo_text: ""
+          todo_text: "",
         },
-        goal_date: null
+        goal_date: null,
       },
       projectData: [
         {
-          project_text: ""
-        }
+          project_text: "",
+        },
       ],
 
       NewWriteToDoModal: false,
       NewWriteSubToDoModal: false,
       ToDoEditModal: false,
-      SubToDoEditModal: false
+      SubToDoEditModal: false,
     };
   }
 
@@ -62,26 +62,26 @@ class ToDay extends React.Component {
     this.props.navigation.toggleDrawer();
   };
 
-  _setTodoSlugForSubTodo = slug => {
+  _setTodoSlugForSubTodo = (slug) => {
     this.setState({
-      todoSlugForSubTodo: slug
+      todoSlugForSubTodo: slug,
     });
   };
 
-  _setNewWriteSubToDoModal = visible => {
+  _setNewWriteSubToDoModal = (visible) => {
     this.setState({
-      NewWriteSubToDoModal: visible
+      NewWriteSubToDoModal: visible,
     });
   };
 
   _setSubToDoEditModal = (visible, item) => {
     this.setState(
       {
-        subtodoDataForModal: item
+        subtodoDataForModal: item,
       },
       () => {
         this.setState({
-          SubToDoEditModal: visible
+          SubToDoEditModal: visible,
         });
       }
     );
@@ -90,33 +90,33 @@ class ToDay extends React.Component {
   _setToDoEditModal = (visible, item) => {
     this.setState(
       {
-        todoDataForModal: item
+        todoDataForModal: item,
       },
       () => {
         this.setState({
-          ToDoEditModal: visible
+          ToDoEditModal: visible,
         });
       }
     );
   };
 
-  _setNewWriteToDoModal = visible => {
+  _setNewWriteToDoModal = (visible) => {
     this.setState({
-      NewWriteToDoModal: visible
+      NewWriteToDoModal: visible,
     });
   };
 
   _getTodoListForToDay = async () => {
     try {
       const config = {
-        headers: {}
+        headers: {},
       };
       const res = await axios.get(URL_GET_TODO_LIST, config);
 
       if (res.status === 200) {
         const temp =
           res.data.length !== 0
-            ? res.data.filter(item => item.done === false)
+            ? res.data.filter((item) => item.done === false)
             : res.data;
         this.props.todoUpdate(temp);
       }
@@ -129,17 +129,16 @@ class ToDay extends React.Component {
   _getProjectList = async () => {
     try {
       const config = {
-        headers: {}
+        headers: {},
       };
       const res = await axios.get(URL_GET_PROJECT_LIST, config);
 
       if (res.status === 200) {
         this.setState({
-          projectData: res.data
+          projectData: res.data,
         });
       }
     } catch (error) {
-      console.log("2");
       console.log(error);
       console.error(error);
     }
@@ -148,7 +147,7 @@ class ToDay extends React.Component {
   _getSubTodoList = async () => {
     try {
       const config = {
-        headers: {}
+        headers: {},
       };
       const res = await axios.get(URL_GET_SUBTODO_LIST, config);
 
@@ -164,7 +163,7 @@ class ToDay extends React.Component {
   _makeNewTodo = async (todoValue, projectValue) => {
     try {
       const config = {
-        headers: {}
+        headers: {},
       };
       const formData = new FormData();
       formData.append("todo_text", todoValue.todo_text);
@@ -182,6 +181,8 @@ class ToDay extends React.Component {
 
       if (res.status === 201) {
         this._getTodoListForToDay();
+        this._getProjectList();
+        this._getSubTodoList();
       }
     } catch (error) {
       console.log(error);
@@ -192,7 +193,7 @@ class ToDay extends React.Component {
   _makeNewSubTodo = async (subtodoValue, slug) => {
     try {
       const config = {
-        headers: {}
+        headers: {},
       };
 
       const formData = new FormData();
@@ -210,6 +211,8 @@ class ToDay extends React.Component {
       const res = await axios.post(URL_POST_SUBTODO_LIST, formData, config);
 
       if (res.status == 201) {
+        this._getTodoListForToDay();
+        this._getProjectList();
         this._getSubTodoList();
       }
     } catch (error) {
@@ -221,7 +224,7 @@ class ToDay extends React.Component {
   _editTodoDetail = async (todoValue, slug) => {
     try {
       const config = {
-        headers: {}
+        headers: {},
       };
 
       const formData = new FormData();
@@ -231,8 +234,10 @@ class ToDay extends React.Component {
       const res = await axios.put(URL_PUT_TODO_DETAIL(slug), formData, config);
 
       if (res.status === 200) {
-        console.log(res);
         this._getTodoListForToDay();
+
+        this._getProjectList();
+        this._getSubTodoList();
       }
     } catch (error) {
       console.log(error);
@@ -242,7 +247,7 @@ class ToDay extends React.Component {
   _doneForTodo = async (todoValue, slug) => {
     try {
       const config = {
-        headers: {}
+        headers: {},
       };
 
       const formData = new FormData();
@@ -256,6 +261,8 @@ class ToDay extends React.Component {
 
       if (res.status === 200) {
         this._getTodoListForToDay();
+        this._getProjectList();
+        this._getSubTodoList();
       }
     } catch (error) {
       console.log(error);
@@ -266,7 +273,7 @@ class ToDay extends React.Component {
   _editSubTodoDetail = async (subTodoValue, slug) => {
     try {
       const config = {
-        headers: {}
+        headers: {},
       };
 
       const formData = new FormData();
@@ -280,6 +287,8 @@ class ToDay extends React.Component {
       );
 
       if (res.status === 200) {
+        this._getTodoListForToDay();
+        this._getProjectList();
         this._getSubTodoList();
       }
     } catch (error) {
@@ -291,7 +300,7 @@ class ToDay extends React.Component {
   _doneForSubTodo = async (subTodoValue, slug) => {
     try {
       const config = {
-        headers: {}
+        headers: {},
       };
 
       const formData = new FormData();
@@ -310,6 +319,8 @@ class ToDay extends React.Component {
       );
 
       if (res.status === 200) {
+        this._getTodoListForToDay();
+        this._getProjectList();
         this._getSubTodoList();
       }
     } catch (error) {
@@ -329,7 +340,7 @@ class ToDay extends React.Component {
       this.props.appStatus.todo.length === 0
         ? this.props.appStatus.todo
         : this.props.appStatus.todo.filter(
-            item =>
+            (item) =>
               new Date(item.goal_date).getFullYear() ===
                 new Date().getFullYear() &&
               new Date(item.goal_date).getMonth() === new Date().getMonth() &&
@@ -339,7 +350,7 @@ class ToDay extends React.Component {
       this.props.appStatus.todo.length === 0
         ? this.props.appStatus.todo
         : this.props.appStatus.todo.filter(
-            item =>
+            (item) =>
               new Date(item.goal_date).getFullYear() <
                 new Date().getFullYear() ||
               (new Date(item.goal_date).getFullYear() ===
@@ -359,7 +370,7 @@ class ToDay extends React.Component {
             height: 55,
             backgroundColor: "blue",
             flexDirection: "row",
-            alignItems: "center"
+            alignItems: "center",
           }}
         >
           <TouchableOpacity
@@ -395,7 +406,7 @@ class ToDay extends React.Component {
                           width: 30,
                           height: 30,
                           borderColor: "grey",
-                          borderRadius: 30 / 2
+                          borderRadius: 30 / 2,
                         }}
                         onPress={() => {
                           this._doneForTodo(item, item.slug);
@@ -406,7 +417,7 @@ class ToDay extends React.Component {
                           borderBottomWidth: 1,
                           borderBottomColor: "grey",
                           height: 50,
-                          justifyContent: "center"
+                          justifyContent: "center",
                         }}
                         onPress={() => {
                           this._setToDoEditModal(true, item);
@@ -426,7 +437,7 @@ class ToDay extends React.Component {
                         height: 50,
                         borderBottomWidth: 1,
                         borderBottomColor: "grey",
-                        alignItems: "center"
+                        alignItems: "center",
                       }}
                     >
                       <TouchableOpacity
@@ -436,7 +447,7 @@ class ToDay extends React.Component {
                           borderColor: "grey",
                           borderWidth: 2,
                           borderRadius: 25 / 2,
-                          marginLeft: 7
+                          marginLeft: 7,
                         }}
                         onPress={() => {
                           this._doneForTodo(item, item.slug);
@@ -444,7 +455,7 @@ class ToDay extends React.Component {
                       ></TouchableOpacity>
                       <TouchableOpacity
                         style={{
-                          justifyContent: "center"
+                          justifyContent: "center",
                         }}
                         onPress={() => {
                           this._setToDoEditModal(true, item);
@@ -484,7 +495,7 @@ class ToDay extends React.Component {
                           width: 30,
                           height: 30,
                           borderColor: "grey",
-                          borderRadius: 30 / 2
+                          borderRadius: 30 / 2,
                         }}
                         onPress={() => {
                           this._doneForTodo(item, item.slug);
@@ -495,7 +506,7 @@ class ToDay extends React.Component {
                           borderBottomWidth: 1,
                           borderBottomColor: "grey",
                           height: 50,
-                          justifyContent: "center"
+                          justifyContent: "center",
                         }}
                         onPress={() => {
                           this._setToDoEditModal(true, item);
@@ -515,7 +526,7 @@ class ToDay extends React.Component {
                         height: 50,
                         borderBottomWidth: 1,
                         borderBottomColor: "grey",
-                        alignItems: "center"
+                        alignItems: "center",
                       }}
                     >
                       <TouchableOpacity
@@ -525,7 +536,7 @@ class ToDay extends React.Component {
                           borderColor: "grey",
                           borderWidth: 2,
                           borderRadius: 25 / 2,
-                          marginLeft: 7
+                          marginLeft: 7,
                         }}
                         onPress={() => {
                           this._doneForTodo(item, item.slug);
@@ -533,7 +544,7 @@ class ToDay extends React.Component {
                       ></TouchableOpacity>
                       <TouchableOpacity
                         style={{
-                          justifyContent: "center"
+                          justifyContent: "center",
                         }}
                         onPress={() => {
                           this._setToDoEditModal(true, item);
@@ -565,7 +576,7 @@ class ToDay extends React.Component {
             right: 10,
             backgroundColor: "blue",
             alignItems: "center",
-            justifyContent: "center"
+            justifyContent: "center",
           }}
           onPress={() => {
             this._setNewWriteToDoModal(true);
@@ -616,20 +627,20 @@ class ToDay extends React.Component {
   }
 }
 
-const mapStateToProps = state => {
+const mapStateToProps = (state) => {
   return {
-    appStatus: state.appStatus
+    appStatus: state.appStatus,
   };
 };
 
-const mapDispatchToProps = dispatch => {
+const mapDispatchToProps = (dispatch) => {
   return {
-    todoUpdate: todo => {
+    todoUpdate: (todo) => {
       dispatch(actions.TodoUpdate(todo));
     },
-    subtodoUpdate: subtodo => {
+    subtodoUpdate: (subtodo) => {
       dispatch(actions.SubTodoUpdate(subtodo));
-    }
+    },
   };
 };
 

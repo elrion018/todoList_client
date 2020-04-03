@@ -2,7 +2,7 @@ import * as React from "react";
 
 import { NavigationContainer } from "@react-navigation/native";
 import { createDrawerNavigator } from "@react-navigation/drawer";
-import { TodoBox, ToDay, NextWeek } from "../../pages/Main";
+import { TodoBox, ToDay, NextWeek, Projects } from "../../pages/Main";
 function TodoBoxFuc({ navigation }) {
   return <TodoBox navigation={navigation}></TodoBox>;
 }
@@ -13,6 +13,10 @@ function ToDayFuc({ navigation }) {
 
 function NextWeekFuc({ navigation }) {
   return <NextWeek navigation={navigation}></NextWeek>;
+}
+
+function ProjectsFuc({ navigation }) {
+  return <Projects navigation={navigation}></Projects>;
 }
 
 const Drawer = createDrawerNavigator();
@@ -34,6 +38,11 @@ function MyDrawer() {
         name="NextWeek"
         component={NextWeekFuc}
         options={{ drawerLabel: "다음 7일" }}
+      />
+      <Drawer.Screen
+        name="Projects"
+        component={ProjectsFuc}
+        options={{ drawerLabel: "프로젝트" }}
       />
     </Drawer.Navigator>
   );

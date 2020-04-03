@@ -7,7 +7,7 @@ import {
   TouchableOpacity,
   TouchableWithoutFeedback,
   TextInput,
-  TouchableHighlightBase
+  TouchableHighlightBase,
 } from "react-native";
 import { Calendar, CalendarList, Agenda } from "react-native-calendars";
 import Menu, { MenuItem, MenuDivider } from "react-native-material-menu";
@@ -22,12 +22,12 @@ class NewWriteToDoModal extends React.Component {
       pageHeight: new Animated.Value(0),
       todoValue: {
         todo_text: "",
-        goal_date: new Date()
+        goal_date: new Date(),
       },
       tempGoalDate: new Date(),
       projectValue: {},
       selectedDay: null,
-      isCalendars: false
+      isCalendars: false,
     };
   }
 
@@ -40,44 +40,44 @@ class NewWriteToDoModal extends React.Component {
 
     copiedArray = {
       ...copiedArray,
-      goal_date: this.state.tempGoalDate
+      goal_date: this.state.tempGoalDate,
     };
 
     this.setState({
-      todoValue: copiedArray
+      todoValue: copiedArray,
     });
   };
 
-  handleChangeByButton = value => {
+  handleChangeByButton = (value) => {
     let nowDate = new Date();
     switch (value) {
       case "오늘":
         this.setState({
-          tempGoalDate: new Date()
+          tempGoalDate: new Date(),
         });
         break;
       case "내일":
         nowDate.setDate(nowDate.getDate() + 1);
         this.setState({
-          tempGoalDate: nowDate
+          tempGoalDate: nowDate,
         });
         break;
 
       case "다음 주":
         nowDate.setDate(nowDate.getDate() + 7);
         this.setState({
-          tempGoalDate: nowDate
+          tempGoalDate: nowDate,
         });
         break;
       case "날짜 없음":
         this.setState({
-          tempGoalDate: null
+          tempGoalDate: null,
         });
       default:
     }
   };
 
-  handleDateChange = value => {
+  handleDateChange = (value) => {
     const convertedDateString = value.dateString.split("-");
 
     this.setState({
@@ -85,17 +85,17 @@ class NewWriteToDoModal extends React.Component {
         convertedDateString[0],
         convertedDateString[1] - 1,
         convertedDateString[2]
-      )
+      ),
     });
   };
 
-  setMenuRef = ref => {
+  setMenuRef = (ref) => {
     this._menu = ref;
   };
 
-  hideMenu = item => {
+  hideMenu = (item) => {
     this.setState({
-      projectValue: item
+      projectValue: item,
     });
     this._menu.hide();
   };
@@ -106,28 +106,28 @@ class NewWriteToDoModal extends React.Component {
 
   _firstLoad = () => {
     this.setState({
-      projectValue: this.props.data[0]
+      projectValue: this.props.data[0],
     });
     Animated.timing(this.state.bgOpacity, {
       toValue: 1,
-      duration: 500
+      duration: 500,
     }).start();
     Animated.timing(this.state.pageHeight, {
       toValue: 150,
-      duration: 500
+      duration: 500,
     }).start();
   };
 
-  _setIsCalendars = visible => {
+  _setIsCalendars = (visible) => {
     this.setState({
-      isCalendars: visible
+      isCalendars: visible,
     });
   };
 
   _openCalendarsAnimate = () => {
     Animated.timing(this.state.pageHeight, {
       toValue: 650,
-      duration: 500
+      duration: 500,
     }).start(() => {
       this._setIsCalendars(true);
     });
@@ -136,7 +136,7 @@ class NewWriteToDoModal extends React.Component {
   _closeCalendarsAnimate = () => {
     Animated.timing(this.state.pageHeight, {
       toValue: 150,
-      duration: 500
+      duration: 500,
     }).start(() => {
       this._setIsCalendars(false);
     });
@@ -145,30 +145,30 @@ class NewWriteToDoModal extends React.Component {
   _dismissAnimate = () => {
     Animated.timing(this.state.bgOpacity, {
       toValue: 0,
-      duration: 500
+      duration: 500,
     });
     Animated.timing(this.state.pageHeight, {
       toValue: 0,
-      duration: 500
+      duration: 500,
     }).start(() => {
       if (this.state.isCalendars) {
         this.setState({
-          isCalendars: false
+          isCalendars: false,
         });
       }
       this.props.setModalProp(false);
     });
   };
 
-  handleTextChange = text => {
+  handleTextChange = (text) => {
     let copiedArray = this.state.todoValue;
     copiedArray = {
       ...copiedArray,
-      todo_text: text
+      todo_text: text,
     };
     console.log(copiedArray);
     this.setState({
-      todoValue: copiedArray
+      todoValue: copiedArray,
     });
   };
 
@@ -180,7 +180,7 @@ class NewWriteToDoModal extends React.Component {
       visible,
       setModalProp,
       data,
-      _makeNewTodo
+      _makeNewTodo,
     } = this.props;
     return (
       <Modal
@@ -206,7 +206,7 @@ class NewWriteToDoModal extends React.Component {
               position: "absolute",
               backgroundColor: "rgba(100,100,100,0.25)",
 
-              opacity: this.state.bgOpacity
+              opacity: this.state.bgOpacity,
             }}
           ></Animated.View>
         </TouchableWithoutFeedback>
@@ -215,7 +215,7 @@ class NewWriteToDoModal extends React.Component {
             position: "absolute",
             bottom: 0,
             width: "100%",
-            height: this.state.pageHeight
+            height: this.state.pageHeight,
           }}
         >
           {this.state.isCalendars ? (
@@ -229,7 +229,7 @@ class NewWriteToDoModal extends React.Component {
                   height: 300,
                   paddingRight: 32,
                   paddingLeft: 32,
-                  backgroundColor: "white"
+                  backgroundColor: "white",
                 }}
               >
                 <View style={{ flexDirection: "row" }}>
@@ -252,13 +252,13 @@ class NewWriteToDoModal extends React.Component {
                     </TouchableOpacity>
                   )}
                 </View>
-                {day.map(item => {
+                {day.map((item) => {
                   return (
                     <TouchableOpacity
                       style={{
                         flexDirection: "row",
                         height: 30,
-                        width: "100%"
+                        width: "100%",
                       }}
                       onPress={() => {
                         this.handleChangeByButton(item);
@@ -268,7 +268,7 @@ class NewWriteToDoModal extends React.Component {
                         style={{
                           height: 20,
                           width: 20,
-                          backgroundColor: "blue"
+                          backgroundColor: "blue",
                         }}
                       ></View>
 
@@ -288,14 +288,14 @@ class NewWriteToDoModal extends React.Component {
               </View>
               <CalendarList
                 style={{
-                  height: 350
+                  height: 350,
                 }}
                 onDayPress={this.handleDateChange}
                 markedDates={{
                   [this.state.selectedDay]: {
                     selected: true,
-                    selectedColor: "blue"
-                  }
+                    selectedColor: "blue",
+                  },
                 }}
                 pastScrollRange={50}
                 futureScrollRange={50}
@@ -313,14 +313,14 @@ class NewWriteToDoModal extends React.Component {
                 height: 150,
                 paddingRight: 32,
                 paddingLeft: 32,
-                backgroundColor: "white"
+                backgroundColor: "white",
               }}
             >
               <View>
                 <TextInput
                   placeholder={"할 일을 입력하세요"}
                   value={this.state.todoValue.todo_text}
-                  onChangeText={text => this.handleTextChange(text)}
+                  onChangeText={(text) => this.handleTextChange(text)}
                 ></TextInput>
               </View>
               <Text>{this.state.todoValue.todo_text}</Text>
@@ -360,7 +360,7 @@ class NewWriteToDoModal extends React.Component {
                 )}
                 <View>
                   <Menu
-                    style={{ width: 70 }}
+                    style={{ width: 200 }}
                     ref={this.setMenuRef}
                     button={
                       <TouchableOpacity onPress={this.showMenu}>
@@ -396,7 +396,7 @@ class NewWriteToDoModal extends React.Component {
                   borderRadius: 30,
                   backgroundColor: "blue",
                   alignItems: "center",
-                  justifyContent: "center"
+                  justifyContent: "center",
                 }}
                 onPress={() => {
                   _makeNewTodo(this.state.todoValue, this.state.projectValue);
@@ -404,8 +404,8 @@ class NewWriteToDoModal extends React.Component {
                   this.setState({
                     todoValue: {
                       todo_text: "",
-                      goal_date: new Date()
-                    }
+                      goal_date: new Date(),
+                    },
                   });
                 }}
               >

@@ -7,7 +7,7 @@ import {
   TouchableOpacity,
   TouchableWithoutFeedback,
   TextInput,
-  TouchableHighlightBase
+  TouchableHighlightBase,
 } from "react-native";
 import { Calendar, CalendarList, Agenda } from "react-native-calendars";
 import Icon from "react-native-vector-icons/FontAwesome";
@@ -23,7 +23,7 @@ class ToDoEditModal extends React.Component {
       todoValue: {
         todo_text: "",
         goal_date: new Date(),
-        slug: 0
+        slug: 0,
       },
       tempGoalDate: new Date(),
       tempTodoText: "",
@@ -32,7 +32,7 @@ class ToDoEditModal extends React.Component {
       projectValue: {},
       selectedDay: null,
       isCalendars: false,
-      nameChangeMode: false
+      nameChangeMode: false,
     };
   }
 
@@ -48,7 +48,7 @@ class ToDoEditModal extends React.Component {
         ...copiedArray,
         todo_text: this.state.tempTodoText,
         goal_date: this.state.tempGoalDate,
-        slug: this.state.tempSlug
+        slug: this.state.tempSlug,
       };
     } else {
       copiedArray = {
@@ -61,13 +61,13 @@ class ToDoEditModal extends React.Component {
           (this.state.tempGoalDate.getMonth() + 1) +
           "-" +
           this.state.tempGoalDate.getDate() +
-          "T00:00:00Z"
+          "T00:00:00Z",
       };
     }
 
     this.setState(
       {
-        todoValue: copiedArray
+        todoValue: copiedArray,
       },
       () => {
         this.props._editTodoDetail(
@@ -78,36 +78,36 @@ class ToDoEditModal extends React.Component {
     );
   };
 
-  handleChangeByButton = value => {
+  handleChangeByButton = (value) => {
     let nowDate = new Date();
     switch (value) {
       case "오늘":
         this.setState({
-          tempGoalDate: new Date()
+          tempGoalDate: new Date(),
         });
         break;
       case "내일":
         nowDate.setDate(nowDate.getDate() + 1);
         this.setState({
-          tempGoalDate: nowDate
+          tempGoalDate: nowDate,
         });
         break;
 
       case "다음 주":
         nowDate.setDate(nowDate.getDate() + 7);
         this.setState({
-          tempGoalDate: nowDate
+          tempGoalDate: nowDate,
         });
         break;
       case "날짜 없음":
         this.setState({
-          tempGoalDate: null
+          tempGoalDate: null,
         });
       default:
     }
   };
 
-  handleDateChange = value => {
+  handleDateChange = (value) => {
     const convertedDateString = value.dateString.split("-");
 
     this.setState({
@@ -115,17 +115,17 @@ class ToDoEditModal extends React.Component {
         convertedDateString[0],
         convertedDateString[1],
         convertedDateString[2]
-      )
+      ),
     });
   };
 
-  setMenuRef = ref => {
+  setMenuRef = (ref) => {
     this._menu = ref;
   };
 
-  hideMenu = item => {
+  hideMenu = (item) => {
     this.setState({
-      projectValue: item
+      projectValue: item,
     });
     this._menu.hide();
   };
@@ -139,44 +139,44 @@ class ToDoEditModal extends React.Component {
       this.setState({
         tempTodoText: this.props.data.todo_text,
         tempGoalDate: null,
-        tempSlug: this.props.data.slug
+        tempSlug: this.props.data.slug,
       });
     } else {
       this.setState({
         tempTodoText: this.props.data.todo_text,
         tempGoalDate: new Date(this.props.data.goal_date),
-        tempSlug: this.props.data.slug
+        tempSlug: this.props.data.slug,
       });
     }
     this.setState({
-      todoValue: this.props.data
+      todoValue: this.props.data,
     });
 
     Animated.timing(this.state.bgOpacity, {
       toValue: 1,
-      duration: 500
+      duration: 500,
     }).start();
     Animated.timing(this.state.pageHeight, {
       toValue: 300,
-      duration: 500
+      duration: 500,
     }).start();
   };
-  _setNameChangeMode = visible => {
+  _setNameChangeMode = (visible) => {
     this.setState({
-      nameChangeMode: visible
+      nameChangeMode: visible,
     });
   };
 
-  _setIsCalendars = visible => {
+  _setIsCalendars = (visible) => {
     this.setState({
-      isCalendars: visible
+      isCalendars: visible,
     });
   };
 
   _openCalendarsAnimate = () => {
     Animated.timing(this.state.pageHeight, {
       toValue: 650,
-      duration: 500
+      duration: 500,
     }).start(() => {
       this._setIsCalendars(true);
     });
@@ -185,7 +185,7 @@ class ToDoEditModal extends React.Component {
   _closeCalendarsAnimate = () => {
     Animated.timing(this.state.pageHeight, {
       toValue: 150,
-      duration: 500
+      duration: 500,
     }).start(() => {
       this._setIsCalendars(false);
     });
@@ -194,40 +194,40 @@ class ToDoEditModal extends React.Component {
   _dismissAnimate = () => {
     Animated.timing(this.state.bgOpacity, {
       toValue: 0,
-      duration: 500
+      duration: 500,
     });
     Animated.timing(this.state.pageHeight, {
       toValue: 0,
-      duration: 500
+      duration: 500,
     }).start(() => {
       if (this.state.isCalendars) {
         this.setState({
-          isCalendars: false
+          isCalendars: false,
         });
       }
       if (this.state.nameChangeMode) {
         this.setState({
-          nameChangeMode: false
+          nameChangeMode: false,
         });
       }
       this.props.setModalProp(false, {
         todo_text: "",
         project: {
-          project_text: ""
+          project_text: "",
         },
-        goal_date: null
+        goal_date: null,
       });
     });
   };
 
-  handleTextChange = text => {
+  handleTextChange = (text) => {
     let copiedArray = this.state.todoValue;
     copiedArray = {
       ...copiedArray,
-      todo_text: text
+      todo_text: text,
     };
     this.setState({
-      todoValue: copiedArray
+      todoValue: copiedArray,
     });
   };
 
@@ -241,7 +241,7 @@ class ToDoEditModal extends React.Component {
       _setSubToDoEditModal,
       _setNewWriteSubToDoModal,
       _doneForSubTodo,
-      data
+      data,
     } = this.props;
     return (
       <Modal
@@ -267,7 +267,7 @@ class ToDoEditModal extends React.Component {
               position: "absolute",
               backgroundColor: "rgba(100,100,100,0.25)",
 
-              opacity: this.state.bgOpacity
+              opacity: this.state.bgOpacity,
             }}
           ></Animated.View>
         </TouchableWithoutFeedback>
@@ -276,7 +276,7 @@ class ToDoEditModal extends React.Component {
             position: "absolute",
             bottom: 0,
             width: "100%",
-            height: this.state.pageHeight
+            height: this.state.pageHeight,
           }}
         >
           {this.state.isCalendars ? (
@@ -290,7 +290,7 @@ class ToDoEditModal extends React.Component {
                   height: 300,
                   paddingRight: 32,
                   paddingLeft: 32,
-                  backgroundColor: "white"
+                  backgroundColor: "white",
                 }}
               >
                 <View style={{ flexDirection: "row" }}>
@@ -313,13 +313,13 @@ class ToDoEditModal extends React.Component {
                     </TouchableOpacity>
                   )}
                 </View>
-                {day.map(item => {
+                {day.map((item) => {
                   return (
                     <TouchableOpacity
                       style={{
                         flexDirection: "row",
                         height: 30,
-                        width: "100%"
+                        width: "100%",
                       }}
                       onPress={() => {
                         this.handleChangeByButton(item);
@@ -329,7 +329,7 @@ class ToDoEditModal extends React.Component {
                         style={{
                           height: 20,
                           width: 20,
-                          backgroundColor: "blue"
+                          backgroundColor: "blue",
                         }}
                       ></View>
 
@@ -349,14 +349,14 @@ class ToDoEditModal extends React.Component {
               </View>
               <CalendarList
                 style={{
-                  height: 350
+                  height: 350,
                 }}
                 onDayPress={this.handleDateChange}
                 markedDates={{
                   [this.state.selectedDay]: {
                     selected: true,
-                    selectedColor: "blue"
-                  }
+                    selectedColor: "blue",
+                  },
                 }}
                 pastScrollRange={50}
                 futureScrollRange={50}
@@ -374,7 +374,7 @@ class ToDoEditModal extends React.Component {
                 height: 300,
                 paddingRight: 32,
                 paddingLeft: 32,
-                backgroundColor: "white"
+                backgroundColor: "white",
               }}
             >
               {this.state.nameChangeMode && (
@@ -402,7 +402,7 @@ class ToDoEditModal extends React.Component {
                     width: 10,
                     height: 10,
                     borderRadius: 30,
-                    backgroundColor: "black"
+                    backgroundColor: "black",
                   }}
                 ></View>
                 <Text style={{ marginLeft: 10 }}>
@@ -413,7 +413,7 @@ class ToDoEditModal extends React.Component {
                 {this.state.nameChangeMode ? (
                   <TextInput
                     value={this.state.todoValue.todo_text}
-                    onChangeText={text => {
+                    onChangeText={(text) => {
                       this.handleTextChange(text);
                     }}
                   ></TextInput>
@@ -424,7 +424,7 @@ class ToDoEditModal extends React.Component {
                         this._setNameChangeMode(true);
                       }}
                     >
-                      <Text>{data.todo_text}</Text>
+                      <Text>{this.state.todoValue.todo_text}</Text>
                     </TouchableOpacity>
                     {this.state.tempGoalDate === null ? (
                       <TouchableOpacity
@@ -460,7 +460,7 @@ class ToDoEditModal extends React.Component {
               </View>
               {this.props.subtodo.length !== 0 &&
               this.props.subtodo.filter(
-                item => item.todo.slug === this.props.data.slug
+                (item) => item.todo.slug === this.props.data.slug
               ).length === 0 ? (
                 <TouchableOpacity
                   style={{ flexDirection: "row", alignItems: "center" }}
@@ -472,7 +472,7 @@ class ToDoEditModal extends React.Component {
                     style={{
                       height: 10,
                       width: 10,
-                      backgroundColor: "black"
+                      backgroundColor: "black",
                     }}
                   ></View>
                   <Text style={{ marginLeft: 10 }}>하위 작업 추가</Text>
@@ -481,7 +481,7 @@ class ToDoEditModal extends React.Component {
                 <View style={{ flex: 1 }}>
                   <FlatList
                     data={this.props.subtodo.filter(
-                      item => item.todo.slug === this.props.data.slug
+                      (item) => item.todo.slug === this.props.data.slug
                     )}
                     renderItem={({ item }) => {
                       return (
@@ -491,7 +491,7 @@ class ToDoEditModal extends React.Component {
                             paddingVertical: 10,
                             borderBottomWidth: 1,
                             borderBottomColor: "grey",
-                            alignItems: "center"
+                            alignItems: "center",
                           }}
                         >
                           <TouchableOpacity
@@ -502,12 +502,12 @@ class ToDoEditModal extends React.Component {
                                 borderColor: "grey",
                                 borderWidth: 2,
                                 borderRadius: 25 / 2,
-                                marginLeft: 7
+                                marginLeft: 7,
                               },
                               item.done && {
                                 borderColor: "blue",
-                                backgroundColor: "blue"
-                              }
+                                backgroundColor: "blue",
+                              },
                             ]}
                             onPress={() => {
                               _doneForSubTodo(item, item.slug);
@@ -522,7 +522,7 @@ class ToDoEditModal extends React.Component {
                           >
                             <Text
                               style={{
-                                color: item.done ? "grey" : "black"
+                                color: item.done ? "grey" : "black",
                               }}
                             >
                               {item.subtodo_text}
@@ -535,7 +535,7 @@ class ToDoEditModal extends React.Component {
                   <TouchableOpacity
                     style={{
                       flexDirection: "row",
-                      alignItems: "center"
+                      alignItems: "center",
                     }}
                     onPress={() => {
                       _setNewWriteSubToDoModal(true);
@@ -545,7 +545,7 @@ class ToDoEditModal extends React.Component {
                       style={{
                         height: 10,
                         width: 10,
-                        backgroundColor: "black"
+                        backgroundColor: "black",
                       }}
                     ></View>
                     <Text style={{ marginLeft: 10 }}>하위 작업 추가</Text>
