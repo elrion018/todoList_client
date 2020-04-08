@@ -85,6 +85,7 @@ class ProjectEditModal extends React.Component {
       data,
       _makeNewProject,
       _editProjectDetail,
+      _deleteProjectDetail,
     } = this.props;
     return (
       <Modal
@@ -144,6 +145,18 @@ class ProjectEditModal extends React.Component {
                     <Text>프로젝트 이름 변경</Text>
                     <View style={{ flex: 1 }}></View>
                     <TouchableOpacity
+                      style={{
+                        marginRight: 15,
+                      }}
+                      onPress={() => {
+                        _deleteProjectDetail(this.state.projectValue.slug);
+
+                        this._dismissAnimate();
+                      }}
+                    >
+                      <Text>삭제</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
                       style={{ alignItems: "center", justifyContent: "center" }}
                       onPress={() => {
                         _editProjectDetail(
@@ -167,7 +180,20 @@ class ProjectEditModal extends React.Component {
                 </View>
               ) : (
                 <View>
-                  <Text>프로젝트 이름</Text>
+                  <View style={{ flexDirection: "row" }}>
+                    <Text>프로젝트 이름</Text>
+                    <View style={{ flex: 1 }}></View>
+
+                    <TouchableOpacity
+                      onPress={() => {
+                        _deleteProjectDetail(this.state.projectValue.slug);
+                        this._dismissAnimate();
+                      }}
+                    >
+                      <Text>삭제</Text>
+                    </TouchableOpacity>
+                  </View>
+
                   <TouchableOpacity
                     onPress={() => {
                       this._setNameChangeMode(true);

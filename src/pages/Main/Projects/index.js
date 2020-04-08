@@ -150,6 +150,25 @@ class Projects extends React.Component {
     }
   };
 
+  _deleteProjectDetail = async (slug) => {
+    try {
+      const config = {
+        headers: {},
+      };
+
+      const res = await axios.delete(URL_PUT_PROJECT_LIST(slug), config);
+      console.log(res);
+      if (res.status === 204) {
+        this._getTodoList();
+        this._getProjectList();
+        this._getSubTodoList();
+      }
+    } catch (error) {
+      console.log(error);
+      console.error(error);
+    }
+  };
+
   componentDidMount() {
     this._getTodoList();
     this._getProjectList();
@@ -235,6 +254,7 @@ class Projects extends React.Component {
           visible={this.state.projectEditModal}
           data={this.state.projectDataForModal}
           _editProjectDetail={this._editProjectDetail}
+          _deleteProjectDetail={this._deleteProjectDetail}
         />
       </View>
     );
